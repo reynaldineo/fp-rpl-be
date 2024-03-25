@@ -1,0 +1,60 @@
+tags:
+- name: auth
+  description: auth API
+- name: user
+  description: user API
+- name: course
+  description: course API
+- name: store
+  description: store API
+
+paths:
+
+# [POST] users/sample
+  /user/sample/{number}:
+    post:
+      tags:
+      - user
+      summary: Example api endpoint
+      parameters:
+      - name: number
+        in: path
+        description: a number
+        required: true
+        type: integer
+      - name: body
+        in: body
+        description: SampleData
+        required: true
+        schema:
+          $ref: '#/definitions/SampleData'
+      responses:
+        200:
+          description: 'OK'
+          examples:
+            application/json:
+              number: 0
+              str: 'sample string'
+              temperature: 30
+        400:
+          description: 'Bad Request'
+        500:
+          description: 'Server Error'
+
+# definitions
+definitions:
+  SampleData:
+    type: object
+    required:
+        - str
+        - temperature
+    properties:
+      str:
+        type: string
+        description: sample string
+      temperature:
+        type: integer
+        description: sample temperature
+schemes:
+ - https
+ - http
