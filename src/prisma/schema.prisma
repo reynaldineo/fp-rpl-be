@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["relationJoins"]
@@ -14,8 +8,106 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  password String
+model account {
+  id          String    @id @default(uuid())  
+  email       String    @unique @db.VarChar(100)
+  password    String    @db.VarChar(255)
+  role        Role   
+  created_at  DateTime? @db.Date
+  bio         String?   @db.Text
+  invoice     invoice[]
+  like        like[]
+  course      course[]
+  comment     comment[]
+  cart        cart?
+}
+
+enum Role {
+  Produsen
+  Konsumen  
+}
+
+model course {
+  id          String      @id @default(uuid())
+  url         String      @db.VarChar(512)
+  title       String      @db.VarChar(100)
+  caption     String      @db.Text
+  label       Label   
+  like_count  Int?        @default(0)
+  uploaded_at DateTime?   @db.Date
+  account     account     @relation(fields: [account_id], references: [id], onDelete: Cascade)
+  account_id  String 
+  comment     comment[] 
+  like        like[] 
+  product     product[]   
+}
+
+enum Label {
+  Anorganik
+  Organik
+}
+
+model comment {
+  id          String  @id @default(uuid())
+  comment     String  @db.Text
+  account     account @relation(fields: [account_id], references: [id], onDelete: Cascade)
+  account_id  String
+  course      course  @relation(fields: [course_id], references: [id], onDelete: Cascade)
+  course_id   String
+}
+
+model like {
+  id          String  @id @default(uuid())        
+  course      course  @relation(fields: [course_id], references: [id], onDelete: Cascade)
+  course_id   String
+  account     account @relation(fields: [account_id], references: [id], onDelete: Cascade)
+  account_id  String
+}
+
+model product {
+  id              String  @id @default(uuid())
+  name            String  @db.VarChar(100)
+  price           Int
+  stock           Int 
+  description     String  @db.Text
+  course          course  @relation(fields: [course_id], references: [id], onDelete: Cascade)
+  course_id       String
+  q               q[]
+}
+
+model cart {
+  id              String  @id @default(uuid())
+  current_cost    Int
+  account         account @relation(fields: [account_id], references: [id])
+  account_id      String  @unique
+  q               q[]
+  invoice_detail  invoice_detail[]
+}
+
+model q {
+  id          String  @id @default(uuid())
+  quantity    Int     @default(0)
+  product     product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  product_id  String 
+  cart        cart    @relation(fields: [cart_id], references: [id], onDelete: Cascade)
+  cart_id     String
+}
+
+model invoice {
+  id              String @id @default(uuid())
+  shippingAddress String @db.VarChar(100)
+  payment_method  String @db.VarChar(20)
+  account         account @relation(fields: [account_id], references: [id], onDelete: Cascade)
+  account_id      String
+  invoice_detail  invoice_detail[]
+}
+
+model invoice_detail  {
+  id          String    @id @default(uuid())
+  total_cost  Int
+  date        DateTime  @db.Date
+  invoice     invoice   @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
+  invoice_id  String
+  cart        cart      @relation(fields: [cart_id], references: [id], onDelete: Cascade)
+  cart_id     String
 }
