@@ -6,6 +6,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "lib": ["ESNext", "esnext.asynciterable"],
+    "skipLibCheck": true,
     "typeRoots": ["node_modules/@types"],
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
@@ -34,6 +35,6 @@
       "@utils/*": ["utils/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.json", ".env"],
+  "include": ["src/**/*.ts", "src/*.ts", "src/**/*.json", ".env"],
   "exclude": ["node_modules", "src/http", "src/logs"]
 }
