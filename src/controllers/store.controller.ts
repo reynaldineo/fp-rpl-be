@@ -1,5 +1,5 @@
 import { Container } from "typedi";
-import { StoreService } from "../services/store.route.js";
+import { StoreService } from "../services/store.service.js";
 
 export class StoreController {
   public store = Container.get(StoreService);

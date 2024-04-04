@@ -47,3 +47,5 @@ Your can access the API documentation provided by swagger at :
 1. Create your controller function in ``./src/controllers``
 2. If you need to call a prisma query services function, make sure to get it via ``container.get(<service_name>)``
 3. Make a new routes in ``./src/routes`` according to the controller type. Ex: auth.controller will register the routes in auth.route
+4. Create the validation parameter for the routes . Place the dtos in `./src/dtos` and use the validation middlewares on the newly created routes. see example in `user.routes.ts`
+5. Add the api documentation on swagger.yaml
