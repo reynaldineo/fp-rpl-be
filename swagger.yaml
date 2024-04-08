@@ -114,7 +114,7 @@ paths:
       parameters:
       - name: body
         in: body
-        description: Update one the properties if it's specified
+        description: Update one the properties if it's specified. Otherwise don't include it
         required: false
         schema:
           $ref: '#/definitions/Update'

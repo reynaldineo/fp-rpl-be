@@ -42,7 +42,7 @@ export class UserController {
   };
 
   /**
-   * @description Update the specified properties of currently logged in account
+   * @description Update the specified account properties. Otherwise don't include it in the request body
    * @endpoint [Put] /user/update
    * @Body {UpdateUserDTO} - Request body
    */
