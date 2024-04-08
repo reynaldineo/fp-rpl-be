@@ -9,8 +9,134 @@ tags:
   description: store API
 
 paths:
+# [POST] auth/login
+  /auth/login:
+    post:
+      tags:
+      - auth
+      summary: Login to an existing account
+      parameters:
+      - name: body
+        in: body
+        description: login Object
+        required: true
+        schema:
+          $ref: '#/definitions/Login'
+      responses:
+        200:
+          description: 'OK'
+          examples:
+            application/json:
+              message: "success"
+              id: "user-id"
+              role: "Konsumen"
+              jwt: "token"
+        400:
+          description: 'Bad Request'
+        500:
+          description: 'Server Error'
 
-# [POST] users/sample
+# [POST] auth/register
+  /auth/register:
+    post:
+      tags:
+      - auth
+      summary: Register an account
+      parameters:
+      - name: body
+        in: body
+        description: Register Object
+        required: true
+        schema:
+          $ref: '#/definitions/Register'
+      responses:
+        200:
+          description: 'OK'
+          examples:
+            application/json:
+              message: "success"
+              id: "user-id"
+        400:
+          description: 'Bad Request'
+        500:
+          description: 'Server Error'
+
+  # [GET] user/getrole
+  /user/getrole:
+    get:
+      tags:
+      - user
+      summary: Get the role of current logged in user
+      responses:
+        200:
+          description: 'OK'
+          examples:
+            application/json:
+              id: "user-id"
+              role: "Produsen"
+        400:
+          description: 'Bad Request'
+        401:
+          description: Unauthorized
+        500:
+          description: 'Server Error'
+
+  # [GET] user/details
+  /user/details:
+    get:
+      tags:
+      - user
+      summary: Get the details of current logged in user
+      responses:
+        200:
+          description: 'OK'
+          examples:
+              application/json:
+                id: "user-id"
+                email: "user@example.com"
+                username: null
+                role: null
+                created_at: "2024-04-08T00:00:00.000Z"
+                bio: null
+        400:
+          description: 'Bad Request'
+        401:
+          description: Unauthorized
+        500:
+          description: 'Server Error'
+
+  # [Put] user/update
+  /user/update:
+    put:
+      tags:
+      - user
+      summary: Update one of the properties on the account
+      parameters:
+      - name: body
+        in: body
+        description: Update one the properties if it's specified. Otherwise don't include it
+        required: false
+        schema:
+          $ref: '#/definitions/Update'
+      responses:
+        200:
+          description: 'OK'
+          examples:
+              application/json:
+                message: "updated"
+                id: "user-id"
+                email: "user@example.com"
+                username: null  
+                role: "Produsen"
+                bio: null
+        400:
+          description: 'Bad Request'
+        401:
+          description: Unauthorized
+        500:
+          description: 'Server Error'
+
+# [POST] user/sample
   /user/sample/{number}:
     post:
       tags:
@@ -43,6 +169,56 @@ paths:
 
 # definitions
 definitions:
+  Login:
+    type: object
+    required:
+        -email
+        -password
+    properties:
+      email:
+        type: string
+        format: email
+        description: email
+      password:
+        type: string
+        description: password
+  Register:
+    type: object
+    required:
+        -email
+        -password
+    properties:
+      email:
+        type: string
+        format: email
+        description: email
+      password:
+        type: string
+        description: password
+  Update:
+    type: object
+    properties:
+      email:
+        type: string
+        format: email
+        description: email
+        nullable: true
+      username:
+        type: string
+        description: username
+        nullable: true
+      password:
+        type: string
+        description: password
+        nullable: true
+      role:
+        type: string
+        description: role
+        nullable: true
+      bio:
+        type: string
+        description: bio
+        nullable: true
   SampleData:
     type: object
     required:

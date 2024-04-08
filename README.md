@@ -20,7 +20,7 @@ Then, configure the API PORT and DATABASE_URL on each env file .
 
 ### 3. Configure Prisma and Database
 ```bash
-npx prisma migrate
+npx prisma migrate deploy
 npx prisma generate
 ```
 
