@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { StoreController } from "../controllers/store.controller.js";
 import { Routes } from "../interfaces/routes.interface.js";
+import { StoreController } from "../controllers/store.controller.js";
 
 export class StoreRoute implements Routes {
   public path = "/store";
@@ -12,7 +12,7 @@ export class StoreRoute implements Routes {
   }
 
   private initializeRoutes() {
-    //this.router.post(`${this.path}/sample/:number(\\d+)`, ValidationMiddleware(SampleTestDTO, true), this.user.SampleTest);
-    // Define your routes here
+    this.router.put(`${this.path}/cart/:id/update`, this.user.updateCart);
+    this.router.delete(`${this.path}/cart/:id/delete`, this.user.delQtyProd);
   }
 }
