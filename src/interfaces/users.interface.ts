@@ -1,3 +1,5 @@
+import { Role } from "@prisma/client";
+
 // Sample . Taken from a template
 export interface User {
   id?: number;
@@ -5,7 +7,9 @@ export interface User {
   password: string;
 }
 
-export enum Role {
-  Produsen,
-  Konsumen,
+export interface UpdateUser {
+  email?: string;
+  password?: string;
+  role?: Role;
+  bio?: string;
 }

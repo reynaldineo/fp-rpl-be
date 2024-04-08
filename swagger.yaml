@@ -76,6 +76,8 @@ paths:
                 role: "Produsen"
           400:
             description: 'Bad Request'
+          401:
+            description: Unauthorized
           500:
             description: 'Server Error'
 
@@ -96,6 +98,8 @@ paths:
                   bio: null
           400:
             description: 'Bad Request'
+          401:
+            description: Unauthorized
           500:
             description: 'Server Error'
 

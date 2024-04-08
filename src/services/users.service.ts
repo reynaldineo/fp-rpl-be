@@ -3,6 +3,11 @@ import db from "../config/database.js";
 
 @Service()
 export class UserService {
+  /**
+   * Get the details of a user by account Id.
+   * @param {string} id - The id of the user .
+   * @returns {Promise<account>} A promise that resolves to the user roles.
+   */
   public async GetDetails(id: string) {
     return await db.account.findUnique({
       select: { id: true, role: true, created_at: true, bio: true },
@@ -12,7 +17,7 @@ export class UserService {
 
   /**
    * Get the roles of a user by accountId.
-   * @param {string} email - The email of the user .
+   * @param {string} id - The id of the user .
    * @returns {Promise<Role>} A promise that resolves to the user roles.
    */
   public async GetRoles(id: string) {

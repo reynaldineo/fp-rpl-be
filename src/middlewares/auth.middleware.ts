@@ -17,7 +17,7 @@ export const AuthMiddleware = async (req: Request, res: Response, next: NextFunc
   try {
     const Authorization = getAuthorization(req);
     console.log(Authorization);
-    if (!Authorization) next(new HttpException(404, "Authorization header or cookie is missing"));
+    if (!Authorization) next(new HttpException(401, "Authorization header or cookie is missing"));
 
     const token = await VerifyToken(Authorization);
     if ((token as JwtPayload).id) {
