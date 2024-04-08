@@ -9,8 +9,76 @@ tags:
   description: store API
 
 paths:
+# [POST] auth/login
+  /auth/login:
+    post:
+      tags:
+      - auth
+      summary: login to an existing account
+      parameters:
+      - name: body
+        in: body
+        description: login Object
+        required: true
+        schema:
+          $ref: '#/definitions/Login'
+      responses:
+        200:
+          description: 'OK'
+          examples:
+            application/json:
+              message: "success"
+              id: "user-id"
+              role: "Konsumen"
+              jwt: "token"
+        400:
+          description: 'Bad Request'
+        500:
+          description: 'Server Error'
 
-# [POST] users/sample
+# [POST] auth/register
+  /auth/register:
+    post:
+      tags:
+      - auth
+      summary: Register an account
+      parameters:
+      - name: body
+        in: body
+        description: Register Object
+        required: true
+        schema:
+          $ref: '#/definitions/Register'
+      responses:
+        200:
+          description: 'OK'
+          examples:
+            application/json:
+              message: "success"
+              id: "user-id"
+        400:
+          description: 'Bad Request'
+        500:
+          description: 'Server Error'
+
+  # [GET] user/getrole
+  /user/getrole:
+      get:
+        tags:
+        - user
+        summary: Get the role of current logged in user
+        responses:
+          200:
+            description: 'OK'
+            examples:
+              application/json:
+                role: "produsen"
+          400:
+            description: 'Bad Request'
+          500:
+            description: 'Server Error'
+
+# [POST] user/sample
   /user/sample/{number}:
     post:
       tags:
@@ -43,6 +111,32 @@ paths:
 
 # definitions
 definitions:
+  Login:
+    type: object
+    required:
+        -email
+        -password
+    properties:
+      email:
+        type: string
+        format: email
+        description: email
+      password:
+        type: string
+        description: password
+  Register:
+    type: object
+    required:
+        -email
+        -password
+    properties:
+      email:
+        type: string
+        format: email
+        description: email
+      password:
+        type: string
+        description: password
   SampleData:
     type: object
     required:

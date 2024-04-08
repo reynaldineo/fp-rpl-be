@@ -10,6 +10,7 @@ CREATE TABLE "account" (
     "email" VARCHAR(100) NOT NULL,
     "password" VARCHAR(255) NOT NULL,
     "role" "Role" NOT NULL,
+    
     "created_at" DATE,
     "bio" TEXT,
 

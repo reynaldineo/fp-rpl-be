@@ -11,8 +11,8 @@ datasource db {
 model account {
   id          String    @id @default(uuid())  
   email       String    @unique @db.VarChar(100)
-  password    String    @db.VarChar(255)
-  role        Role   
+  password    String    @db.Char(97)
+  role        Role?   
   created_at  DateTime? @db.Date
   bio         String?   @db.Text
   invoice     invoice[]
@@ -34,7 +34,7 @@ model course {
   caption     String      @db.Text
   label       Label   
   like_count  Int?        @default(0)
-  uploaded_at DateTime?   @db.Date
+  uploaded_at DateTime?   @db.Date()
   account     account     @relation(fields: [account_id], references: [id], onDelete: Cascade)
   account_id  String 
   comment     comment[] 

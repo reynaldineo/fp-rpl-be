@@ -9,7 +9,7 @@ import { LOG_DIR } from "../config/index.js";
 // logs dir
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const logDir: string = join(__dirname, LOG_DIR);
+const logDir: string = join(__dirname, LOG_DIR!);
 
 if (!existsSync(logDir)) {
   mkdirSync(logDir);

@@ -1,8 +1,7 @@
 import { Router } from "express";
 import { UserController } from "../controllers/users.controller.js";
-import { SampleTestDTO } from "../dtos/users.dto.js";
 import { Routes } from "../interfaces/routes.interface.js";
-import { ValidationMiddleware } from "../middlewares/validation.middleware.js";
+import { AuthMiddleware } from "../middlewares/auth.middleware.js";
 
 export class UserRoute implements Routes {
   public path = "/user";
@@ -14,7 +13,7 @@ export class UserRoute implements Routes {
   }
 
   private initializeRoutes() {
-    this.router.post(`${this.path}/sample/:number(\\d+)`, ValidationMiddleware(SampleTestDTO, true), this.user.SampleTest);
-    // Define your routes here
+    // Define your routes heres
+    this.router.get(`${this.path}/getrole`, AuthMiddleware, this.user.GetRole);
   }
 }

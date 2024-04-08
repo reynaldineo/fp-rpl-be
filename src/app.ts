@@ -78,6 +78,7 @@ export class App {
             in: "header",
           },
         },
+        security: [{ "Bearer {token}": [] }],
       },
       apis: ["swagger.yaml"],
     };
