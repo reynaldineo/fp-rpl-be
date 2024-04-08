@@ -9,6 +9,7 @@ export interface User {
 
 export interface UpdateUser {
   email?: string;
+  username?: string;
   password?: string;
   role?: Role;
   bio?: string;

@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { Container } from "typedi";
 import { UserService } from "../services/users.service.js";
 import { HttpException } from "../exceptions/HttpException.js";
+import { UpdateUserDTO } from "../dtos/users.dto.js";
 
 export class UserController {
   public user = Container.get(UserService);
@@ -35,6 +36,29 @@ export class UserController {
     try {
       const role = await this.user.GetRoles(req.userId);
       res.status(200).json({ id: req.userId, role: role.role });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  /**
+   * @description Update the specified properties of currently logged in account
+   * @endpoint [Put] /user/update
+   * @Body {UpdateUserDTO} - Request body
+   */
+  public UpdateUser = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const props: UpdateUserDTO = req.body;
+      const updatedData = await this.user.UpdateProperties(req.userId, props);
+
+      res.status(200).json({
+        message: "updated",
+        id: updatedData.id,
+        email: updatedData.email,
+        username: updatedData.username,
+        role: updatedData.role,
+        bio: updatedData.bio,
+      });
     } catch (error) {
       next(error);
     }

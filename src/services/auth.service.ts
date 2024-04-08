@@ -14,12 +14,16 @@ export class AuthService {
    * @returns {Promise<Account>} A promise that resolves to the created account
    */
   public async addAccount(account: RegisterAccount) {
-    return await db.account.create({
-      data: {
-        email: account.email,
-        password: account.password,
-        created_at: account.created_at,
-      },
+    return await db.$transaction(async (tx) => {
+      const createdAccount = await tx.account.create({
+        data: {
+          email: account.email,
+          password: account.password,
+        },
+      });
+
+      await tx.cart.create({ data: { account_id: createdAccount.id, current_cost: 0 } });
+      return createdAccount;
     });
   }
 
@@ -30,7 +34,7 @@ export class AuthService {
    * @throws {HttpException} Throws a 400 error if the email is not found or if the password is incorrect
    */
   public async login(account: LoginDTO) {
-    const user = await db.account.findUnique({
+    const user = await db.account.findFirst({
       select: { id: true, role: true, password: true },
       where: { email: account.email },
     });
@@ -44,7 +48,6 @@ export class AuthService {
 
   /**
    * Creates a cookie with the provided token. Default expiration is 7 days
-   *
    * @param {string} token - The token to be stored in the cookie
    * @returns {string} A string representing the cookie
    */

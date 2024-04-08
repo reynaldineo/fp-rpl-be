@@ -19,6 +19,10 @@ export class UpdateUserDTO {
   public email?: string;
 
   @IsString()
+  @MaxLength(50)
+  public username?: string;
+
+  @IsString()
   @MaxLength(255)
   public password?: string;
 
