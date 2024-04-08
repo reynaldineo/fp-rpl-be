@@ -6,6 +6,11 @@ import { HttpException } from "../exceptions/HttpException.js";
 export class UserController {
   public user = Container.get(UserService);
 
+  /**
+   * @description Get the details from currently logged in account
+   * @endpoint [Get] /user/details
+   * @return {AccountDetails} - Account details from the logged in account
+   */
   public GetDetail = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const account = await this.user.GetDetails(req.userId);
@@ -21,6 +26,11 @@ export class UserController {
     }
   };
 
+  /**
+   * @description Get the roles of currently logged in account
+   * @endpoint [Get] /user/getrole
+   * @return {Id, Role} - Id and Role from the logged in account
+   */
   public GetRole = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const role = await this.user.GetRoles(req.userId);

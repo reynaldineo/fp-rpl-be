@@ -3,6 +3,11 @@ import { HttpException } from "../exceptions/HttpException.js";
 import { VerifyToken } from "../utils/jwt.js";
 import { JwtPayload } from "jsonwebtoken";
 
+/**
+ * Get authorization token from either cookie or header
+ * @param {Request} req - The request object
+ * @returns Authorization Token
+ */
 const getAuthorization = (req: Request) => {
   const cookie = req.cookies["FP_Authorization"];
   if (cookie) return cookie;
@@ -13,6 +18,9 @@ const getAuthorization = (req: Request) => {
   return null;
 };
 
+/**
+ * Auth Middleware
+ */
 export const AuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const Authorization = getAuthorization(req);

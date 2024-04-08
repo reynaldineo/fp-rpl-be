@@ -9,7 +9,7 @@ const options: Options = {
 
 /**
  * Hash a password
- * @param {string|Buffer} password - password string that need to be hashed
+ * @param {string | Buffer} password - password string that need to be hashed
  * @returns {Promise<string>} - return the hashed password
  */
 export const Hash = async (password: string | Buffer) => {
@@ -18,8 +18,8 @@ export const Hash = async (password: string | Buffer) => {
 
 /**
  * Description of the function.
- * @param {string|Buffer} hash - Hashed password
- * @param {string|Buffer} password - plain-text password
+ * @param {string | Buffer} hash - Hashed password
+ * @param {string | Buffer} password - plain-text password
  * @returns {Promise<boolean>} - return if the hash equal to the plain-text password
  */
 export const Verify = async (hash: string | Buffer, password: string | Buffer) => {

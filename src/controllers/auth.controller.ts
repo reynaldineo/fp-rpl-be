@@ -10,6 +10,11 @@ export class AuthController {
   public user = Container.get(UserService);
   public auth = Container.get(AuthService);
 
+  /**
+   * @description Register a new account
+   * @endpoint [Post] /auth/register
+   * @Body {RegisterDTO} - The request body
+   */
   public Register = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const register: RegisterDTO = req.body;
@@ -30,6 +35,11 @@ export class AuthController {
     }
   };
 
+  /**
+   * @description Login to an existing account
+   * @endpoint [Post] /auth/login
+   * @Body {LoginDTO} - The request body
+   */
   public Login = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const login: LoginDTO = req.body;
@@ -43,8 +53,4 @@ export class AuthController {
       next(error);
     }
   };
-
-  /*
-    Define your function for the endpoint
-  */
 }

@@ -4,9 +4,9 @@ import db from "../config/database.js";
 @Service()
 export class UserService {
   /**
-   * Get the details of a user by account Id.
-   * @param {string} id - The id of the user .
-   * @returns {Promise<account>} A promise that resolves to the user roles.
+   * Get the details of a user by account Id
+   * @param {string} id - The id of the user
+   * @returns {Promise<account>} A promise that resolves to the user roles
    */
   public async GetDetails(id: string) {
     return await db.account.findUnique({
@@ -16,9 +16,9 @@ export class UserService {
   }
 
   /**
-   * Get the roles of a user by accountId.
-   * @param {string} id - The id of the user .
-   * @returns {Promise<Role>} A promise that resolves to the user roles.
+   * Get the roles of a user by accountId
+   * @param {string} id - The id of the user
+   * @returns {Promise<Role>} A promise that resolves to the user roles
    */
   public async GetRoles(id: string) {
     return await db.account.findUnique({
@@ -28,9 +28,9 @@ export class UserService {
   }
 
   /**
-   * Check if a user exists with the given email.
-   * @param {string} email - The email of the user .
-   * @returns {Promise<boolean>} A promise that resolves to true if the user exists, otherwise false.
+   * Check if a user exists with the given email
+   * @param {string} email - The email of the user
+   * @returns {Promise<boolean>} A promise that resolves to true if the user exists, otherwise false
    */
   public async CheckUserByEmail(email: string) {
     const userId = await db.account.findUnique({
