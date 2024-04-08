@@ -3,6 +3,13 @@ import db from "../config/database.js";
 
 @Service()
 export class UserService {
+  public async GetDetails(id: string) {
+    return await db.account.findUnique({
+      select: { id: true, role: true, created_at: true, bio: true },
+      where: { id: id },
+    });
+  }
+
   /**
    * Get the roles of a user by accountId.
    * @param {string} email - The email of the user .

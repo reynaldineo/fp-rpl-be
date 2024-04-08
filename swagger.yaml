@@ -14,7 +14,7 @@ paths:
     post:
       tags:
       - auth
-      summary: login to an existing account
+      summary: Login to an existing account
       parameters:
       - name: body
         in: body
@@ -72,7 +72,28 @@ paths:
             description: 'OK'
             examples:
               application/json:
-                role: "produsen"
+                id: "user-id"
+                role: "Produsen"
+          400:
+            description: 'Bad Request'
+          500:
+            description: 'Server Error'
+
+  # [GET] user/details
+  /user/details:
+      get:
+        tags:
+        - user
+        summary: Get the details of current logged in user
+        responses:
+          200:
+            description: 'OK'
+            examples:
+                application/json:
+                  id: "user-id"
+                  role: null
+                  created_at: "2024-04-08T00:00:00.000Z"
+                  bio: null
           400:
             description: 'Bad Request'
           500:
