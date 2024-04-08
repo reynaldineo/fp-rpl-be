@@ -10,7 +10,7 @@ import { CreateToken } from "../utils/jwt.js";
 export class AuthService {
   /**
    * Register a new account to the database.
-   * @param {RegisterAccount} account - The account object .
+   * @param {RegisterAccount} account - The account object.
    * @returns {Promise<Account>} A promise that resolves to the created account.
    */
   public async addAccount(account: RegisterAccount) {
