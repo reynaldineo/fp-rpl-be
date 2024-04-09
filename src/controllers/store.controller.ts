@@ -10,7 +10,8 @@ export class StoreController {
   public updateCart = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const prodID: string = req.params.id;
-      const qty: number = req.body;
+      const { qty }: { qty: number } = req.body;
+      console.log(req.userId);
       const data = await this.store.updateCart(req.userId, prodID, qty);
       responseOK(res, "Cart telah diperbarui", data);
     } catch (error) {
