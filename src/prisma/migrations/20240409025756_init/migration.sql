@@ -130,7 +130,7 @@ ALTER TABLE "like" ADD CONSTRAINT "like_account_id_fkey" FOREIGN KEY ("account_i
 ALTER TABLE "product" ADD CONSTRAINT "product_course_id_fkey" FOREIGN KEY ("course_id") REFERENCES "course"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "cart" ADD CONSTRAINT "cart_account_id_fkey" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "cart" ADD CONSTRAINT "cart_account_id_fkey" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "qty" ADD CONSTRAINT "qty_product_id_fkey" FOREIGN KEY ("product_id") REFERENCES "product"("id") ON DELETE CASCADE ON UPDATE CASCADE;
