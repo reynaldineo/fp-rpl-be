@@ -105,7 +105,7 @@ paths:
         500:
           description: 'Server Error'
 
-  # [Put] user/update
+  # [PUT] user/update
   /user/update:
     put:
       tags:
@@ -136,34 +136,83 @@ paths:
         500:
           description: 'Server Error'
 
-# [POST] user/sample
-  /user/sample/{number}:
-    post:
+  # [PUT] store/cart/:productID/update
+  /store/cart/{productID}/update:
+    put:
       tags:
-      - user
-      summary: Example api endpoint
+      - store
+      summary: Update the quantity of a product in the cart
       parameters:
-      - name: number
-        in: path
-        description: a number
-        required: true
-        type: integer
-      - name: body
-        in: body
-        description: SampleData
-        required: true
-        schema:
-          $ref: '#/definitions/SampleData'
+        - in: path
+          name: productID
+          schema:
+            type: string
+          required: true 
+          description: The ID of the product
+        - in: body
+          name: quantity
+          required: true
+          description: The number of new quantity of the product
+          schema:
+            $ref: '#/definitions/qty'
       responses:
         200:
           description: 'OK'
           examples:
             application/json:
-              number: 0
-              str: 'sample string'
-              temperature: 30
+              success: true
+              message: "Cart is updated"
+              data:
+                product:
+                  id: "product-id"
+                  name: "product-name"
+                quantity: 1
+                account:
+                  email: "user@example.com"
+                  username: "user1234"
+                current_cost: 20000
         400:
           description: 'Bad Request'
+        401:
+          description: Unauthorized
+        409:
+          description: 'Conflict'
+        500:
+          description: 'Server Error'
+
+  # [DELETE] store/cart/:id/delete
+  /store/cart/{productID}/delete:
+    delete:
+      tags:
+      - store
+      summary: Delete a product from the cart
+      parameters:
+        - in: path
+          name: productID
+          schema:
+            type: string
+          required: true
+          description: The ID of the product
+      responses:
+        200:
+          description: 'OK'
+          examples:
+            application/json:
+              success: true
+              message: "Product is deleted from cart"
+              data: 
+                product:
+                  id: "product-id"
+                  name: "product-name"
+                quantity: 0
+                account: 
+                  email: "user@example.com"
+                  username: "user1234"
+                current_cost: 3000
+        400:
+          description: 'Bad Request'
+        401:
+          description: Unauthorized
         500:
           description: 'Server Error'
 
@@ -219,18 +268,12 @@ definitions:
         type: string
         description: bio
         nullable: true
-  SampleData:
+  qty:
     type: object
-    required:
-        - str
-        - temperature
     properties:
-      str:
-        type: string
-        description: sample string
-      temperature:
-        type: integer
-        description: sample temperature
+      qty:
+        type: number
+
 schemes:
  - https
  - http
