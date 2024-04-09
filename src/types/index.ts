@@ -4,6 +4,7 @@ export const resCartInfo: Prisma.cartSelect = {
   account: {
     select: {
       email: true,
+      username: true,
     },
   },
   current_cost: true,

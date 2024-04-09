@@ -13,7 +13,7 @@ export class StoreController {
       const { qty }: { qty: number } = req.body;
       console.log(req.userId);
       const data = await this.store.updateCart(req.userId, prodID, qty);
-      responseOK(res, "Cart telah diperbarui", data);
+      responseOK(res, "Cart is updated", data);
     } catch (error) {
       next(error);
     }
@@ -23,7 +23,7 @@ export class StoreController {
     try {
       const prodID: string = req.params.id;
       const data = await this.store.updateCart(req.userId, prodID, 0, true);
-      responseOK(res, "Produk telah dihapus dari cart", data);
+      responseOK(res, "Product is deleted from cart", data);
     } catch (error) {
       next(error);
     }
