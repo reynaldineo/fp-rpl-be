@@ -37,7 +37,7 @@ export class StoreService {
       return res;
     }
   }
-};
+}
 
 export const getCart = (attribute: cartAtt) => {
   return db.cart.findUnique({
@@ -90,7 +90,14 @@ export const createQty = (attribute: qtyAtt) => {
   });
 };
 
-export const updateCart = (qID: string, new_qty: number, cartID: string, curCost: number, cur_qty: number, prodPrice: number) => {
+export const updateCart = (
+  qID: string,
+  new_qty: number,
+  cartID: string,
+  curCost: number,
+  cur_qty: number,
+  prodPrice: number,
+) => {
   return db.$transaction([
     new_qty === 0
       ? db.qty.delete({

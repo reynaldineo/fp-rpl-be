@@ -12,18 +12,25 @@
     "lint": "eslint --ignore-path .gitignore --ext .ts src/",
     "lint:fix": "npm run lint -- --fix",
     "prisma:init": "prisma init",
-    "prisma:migrate": "prisma migrate dev --preview-feature",
+    "prisma:migrate": "dotenv -e .env.production.local -- prisma migrate dev --preview-feature",
     "prisma:generate": "prisma generate",
     "deploy:prod": "npm run build && pm2 start ecosystem.config.js --only prod",
     "deploy:dev": "pm2 start ecosystem.config.js --only dev",
-    "postinstall": "npx patch-package"
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "prettier --write",
+      "eslint --ignore-path .gitignore --ext .ts src/"
+    ],
+    "*.ts": "eslint --cache --fix"
   },
   "prisma": {
     "schema": "src/prisma/schema.prisma"
   },
   "dependencies": {
+    "@node-rs/argon2": "^1.8.0",
     "@prisma/client": "^5.12.0",
-    "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "compression": "^1.7.4",
@@ -35,6 +42,7 @@
     "express": "^4.19.1",
     "helmet": "^7.1.0",
     "hpp": "^0.2.3",
+    "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "reflect-metadata": "^0.2.1",
     "swagger-jsdoc": "^6.2.8",
@@ -44,9 +52,6 @@
     "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
-    "@swc/cli": "^0.3.10",
-    "@swc/core": "^1.4.8",
-    "@types/bcrypt": "^5.0.2",
     "@types/compression": "^1.7.5",
     "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",

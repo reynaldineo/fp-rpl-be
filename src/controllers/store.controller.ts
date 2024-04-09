@@ -7,7 +7,7 @@ import { responseOK } from "../utils/response.js";
 export class StoreController {
   public store = Container.get(StoreService);
 
-  public updateCart = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public updateCart = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const prodID: string = req.params.id;
       const qty: number = req.body;
@@ -18,7 +18,7 @@ export class StoreController {
     }
   };
 
-  public delQtyProd = async(req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public delQtyProd = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const prodID: string = req.params.id;
       const data = await this.store.updateCart(req.userId, prodID, 0, true);

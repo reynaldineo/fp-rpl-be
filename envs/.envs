@@ -5,12 +5,12 @@ PORT = 3000
 DATABASE_URL="postgresql://postgres:{user}@localhost:{port}/{db_name}"
 
 # TOKEN
-SECRET_KEY = secretKey
+SECRET_KEY = "0b3557b66e4b6a35a8f3517fd2314174e76f0fca1fc4f27c08e2cd50b8d6cd0a"
 
 # LOG
-LOG_FORMAT = combined
+LOG_FORMAT = dev
 LOG_DIR = ../logs
 
 # CORS
-ORIGIN = your.domain.com
+ORIGIN = *
 CREDENTIALS = true
