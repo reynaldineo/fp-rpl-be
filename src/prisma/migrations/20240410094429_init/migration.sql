@@ -53,6 +53,7 @@ CREATE TABLE "like" (
 -- CreateTable
 CREATE TABLE "product" (
     "id" UUID NOT NULL,
+    "img_url" VARCHAR(512) NOT NULL,
     "name" VARCHAR(100) NOT NULL,
     "price" INTEGER NOT NULL,
     "stock" INTEGER NOT NULL,
@@ -95,7 +96,7 @@ CREATE TABLE "invoice" (
 CREATE TABLE "invoice_detail" (
     "id" UUID NOT NULL,
     "total_cost" INTEGER NOT NULL DEFAULT 0,
-    "date" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "date" DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "invoice_id" UUID NOT NULL,
     "cart_id" UUID NOT NULL,
 
@@ -103,7 +104,13 @@ CREATE TABLE "invoice_detail" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "account_email_username_key" ON "account"("email", "username");
+CREATE UNIQUE INDEX "account_email_key" ON "account"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "account_username_key" ON "account"("username");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "like_course_id_account_id_key" ON "like"("course_id", "account_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "cart_account_id_key" ON "cart"("account_id");
