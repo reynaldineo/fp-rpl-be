@@ -136,7 +136,338 @@ paths:
         500:
           description: 'Server Error'
 
-  # [PUT] store/cart/:productID/update
+  # [GET] /course
+  /course:
+    get:
+      tags:
+        - course
+      summary: Get all courses
+      responses:
+        200:
+          description: 'OK'
+          examples:
+            application/json:
+              success: true
+              message: "Courses are retrieved successfully"
+              data:
+                id: "course-id"
+                url: "course-url"
+                title: "course-title"
+                label: "Organik"
+                like_count: 3
+                account:
+                  username: "owner-username"
+        400:
+          description: 'Bad Request'
+        401:
+          description: Unauthorized
+        500:
+          description: 'Server Error'
+
+  # [GET] /course/:username
+  /course/{username}:
+    get:
+      tags:
+        - course
+      summary: Get all courses of a user
+      parameters:
+        - in: path
+          name: username
+          schema:
+            type: string
+          required: true
+          description: The username of the user
+      responses:
+        200:
+          description: 'OK'
+          examples:
+            application/json:
+              success: true
+              message: "Success get course by username"
+              data:
+                id: "course-id"
+                url: "course-url"
+                title: "course-title"
+                label: "Organik"
+                like_count: 0
+                account:
+                  username: "owner-username"
+        400:
+          description: 'Bad Request'
+        401:
+          description: Unauthorized
+        500:
+          description: 'Server Error'
+  
+  # [GET] /course/detail/:courseID
+  /course/detail/{courseId}:
+    get:
+      tags:
+        - course
+      summary: Get details of a course
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            type: string
+          required: true
+          description: The ID of the course
+      responses:
+        200:
+          description: 'OK'
+          examples:
+            application/json:
+              success: true
+              message: "Success get course detail"
+              data:
+                id: "course-id"
+                url: "course-url"
+                title: "course-title"
+                label: "Organik"
+                like_count: 0
+                account:
+                  id: "owner-id"
+                  email: "owner-email"
+                comment:
+                  account:
+                    id: "account-id who commented"
+                    email: "account-email who comments the course"
+                  comment: "detail of comment"
+        400:
+          description: 'Bad Request'
+        401:
+          description: Unauthorized
+        500:
+          description: 'Server Error'
+
+  # [GET] /course/detail/:courseID/getLikes
+  /course/detail/{courseId}/getLikes:
+    get:
+      tags:
+        - course
+      summary: Get all likes of a course
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            type: string
+          required: true
+          description: The ID of the course
+      responses:
+        200:
+          description: 'OK'
+          examples:
+            application/json:
+              success: true
+              message: "Success get user who likes the course"
+              data:
+                account:
+                  email: "account-email who likes the course"
+        400:
+          description: 'Bad Request'
+        401:
+          description: Unauthorized
+        500:
+          description: 'Server Error'
+
+  # [GET] /course/detail/:courseID/productList
+  /course/detail/{courseId}/productList:
+    get:
+      tags:
+        - course
+      summary: Get all products of a course
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            type: string
+          required: true
+          description: The ID of the course
+      responses:
+        200:
+          description: 'OK'
+          examples:
+            application/json:
+              success: true
+              message: "Success get product from course"
+              data:
+                id: "product-id"
+                img_url: "product-img-url"
+                name: "product-name"
+                price: 3000
+        400:
+          description: 'Bad Request'
+        401:
+          description: Unauthorized
+        500:
+          description: 'Server Error'
+        
+  # [POST] /course/create
+  /course/create:
+    post:
+      tags:
+        - course
+      summary: Create a course
+      parameters:
+        - in: body
+          name: body
+          required: true
+          description: Course Object
+          schema:
+            $ref: '#/definitions/Course'
+      responses:
+        200:
+          description: 'OK'
+          examples:
+            application/json:
+              success: true
+              message: "Course is created successfully"
+              data:
+                id: "course-id that just created"
+        400:
+          description: 'Bad Request'
+        401:
+          description: Unauthorized
+        500:
+          description: 'Server Error'
+  
+  # [POST] /course/detail/:courseID/addLike
+  /course/detail/{courseId}/tapLike:
+    post:
+      tags:
+        - course
+      summary: Like or unlike a course
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            type: string
+          required: true
+          description: The ID of the course
+      responses:
+        200:
+          description: 'OK'
+          examples:
+            application/json:
+              success: true
+              message: "Course is liked or unliked successfully"
+              data:
+                id: "like-id that just created or deleted"
+                like_count: "the number of likes after like or unlike"
+        400:
+          description: 'Bad Request'
+        401:
+          description: Unauthorized
+        500:
+          description: 'Server Error'
+
+  # [POST] /course/detail/:courseID/addComment
+  /course/detail/{courseId}/addComment:
+    post:
+      tags:
+        - course
+      summary: Add a comment to a course
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            type: string
+          required: true
+          description: The ID of the course
+        - in: body
+          name: body
+          required: true
+          description: Comment Object
+          schema:
+            $ref: '#/definitions/Comment'
+      responses:
+        200:
+          description: 'OK'
+          examples:
+            application/json:
+              success: true
+              message: "Comment is created successfully"
+              data:
+                account:
+                  email: "user-email that just commented"
+                comment: "detail of comment"
+        400:
+          description: 'Bad Request'
+        401:
+          description: Unauthorized
+        500:
+          description: 'Server Error'
+    
+  # [PUT] /course/detail/:courseID/update
+  /course/detail/{courseId}/update:
+    put:
+      tags:
+        - course
+      summary: Update a course
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            type: string
+          required: true
+          description: The ID of the course
+        - in: body
+          name: body
+          required: true
+          description: Course Object
+          schema:
+            $ref: '#/definitions/Course'
+      responses:
+        200:
+          description: 'OK'
+          examples:
+            application/json:
+              success: true
+              message: "Course is updated successfully"
+              data:
+                id: "course-id"
+                title: "new course-title"
+                caption: "new course-caption"
+                label: "new course-label, Organik or Anorganik" 
+        400:
+          description: 'Bad Request'
+        401:
+          description: Unauthorized
+        500:
+          description: 'Server Error'
+
+  # [DELETE] /course/detail/:courseID/delete
+  /course/detail/{courseId}/delete:
+    delete:
+      tags:
+        - course
+      summary: Delete a course
+      parameters:
+        - in: path
+          name: courseId
+          schema:
+            type: string
+          required: true
+          description: The ID of the course
+      responses:
+        200:
+          description: 'OK'
+          examples:
+            application/json:
+              success: true
+              message: "Course is deleted successfully"
+              data:
+                id: "course-id that just deleted"
+                url: "course-url that just deleted"
+                title: "course-title that just deleted"
+        400:
+          description: 'Bad Request'
+        401:
+          description: Unauthorized
+        500:
+          description: 'Server Error'
+      
+  # [PUT] /store/cart/:productID/update
   /store/cart/{productID}/update:
     put:
       tags:
@@ -180,7 +511,7 @@ paths:
         500:
           description: 'Server Error'
 
-  # [DELETE] store/cart/:id/delete
+  # [DELETE] /store/cart/:id/delete
   /store/cart/{productID}/delete:
     delete:
       tags:
@@ -273,7 +604,29 @@ definitions:
     properties:
       qty:
         type: number
-
+  Course:
+    type: object
+    properties:
+      url:
+        type: string
+        description: url
+        nullable: true
+      title:
+        type: string
+        description: title
+      caption:
+        type: string
+        description: caption
+      label:
+        type: string
+        description: label
+        nullable: true
+  Comment:
+    type: object
+    properties:
+      comment:
+        type: string
+        description: comment
 schemes:
  - https
  - http
