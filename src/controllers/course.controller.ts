@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { Container } from "typedi";
 import { CourseService } from "../services/course.service.js";
 import { responseOK } from "../utils/response.js";
