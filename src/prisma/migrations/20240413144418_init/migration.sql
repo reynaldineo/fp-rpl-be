@@ -20,7 +20,8 @@ CREATE TABLE "account" (
 -- CreateTable
 CREATE TABLE "course" (
     "id" UUID NOT NULL,
-    "url" VARCHAR(512) NOT NULL,
+    "url" VARCHAR(255) NOT NULL,
+    "img_cover" VARCHAR(255) NOT NULL,
     "title" VARCHAR(100) NOT NULL,
     "caption" TEXT NOT NULL,
     "label" "Label",
@@ -53,11 +54,13 @@ CREATE TABLE "like" (
 -- CreateTable
 CREATE TABLE "product" (
     "id" UUID NOT NULL,
+    "img_url" VARCHAR(512) NOT NULL,
     "name" VARCHAR(100) NOT NULL,
     "price" INTEGER NOT NULL,
     "stock" INTEGER NOT NULL,
     "description" TEXT NOT NULL,
-    "course_id" UUID NOT NULL,
+    "account_id" UUID NOT NULL,
+    "course_id" UUID,
 
     CONSTRAINT "product_pkey" PRIMARY KEY ("id")
 );
@@ -95,7 +98,7 @@ CREATE TABLE "invoice" (
 CREATE TABLE "invoice_detail" (
     "id" UUID NOT NULL,
     "total_cost" INTEGER NOT NULL DEFAULT 0,
-    "date" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "date" DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "invoice_id" UUID NOT NULL,
     "cart_id" UUID NOT NULL,
 
@@ -103,7 +106,13 @@ CREATE TABLE "invoice_detail" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "account_email_username_key" ON "account"("email", "username");
+CREATE UNIQUE INDEX "account_email_key" ON "account"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "account_username_key" ON "account"("username");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "like_course_id_account_id_key" ON "like"("course_id", "account_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "cart_account_id_key" ON "cart"("account_id");
@@ -125,6 +134,9 @@ ALTER TABLE "like" ADD CONSTRAINT "like_course_id_fkey" FOREIGN KEY ("course_id"
 
 -- AddForeignKey
 ALTER TABLE "like" ADD CONSTRAINT "like_account_id_fkey" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "product" ADD CONSTRAINT "product_account_id_fkey" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "product" ADD CONSTRAINT "product_course_id_fkey" FOREIGN KEY ("course_id") REFERENCES "course"("id") ON DELETE CASCADE ON UPDATE CASCADE;

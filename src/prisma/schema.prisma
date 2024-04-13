@@ -10,8 +10,8 @@ datasource db {
 
 model account {
   id          String    @id @default(uuid()) @db.Uuid 
-  email       String    @db.VarChar(100)
-  username    String?   @db.VarChar(50)
+  email       String    @db.VarChar(100) @unique
+  username    String?   @db.VarChar(50) @unique
   password    String    @db.Char(97)
   role        Role?      
   created_at  DateTime  @db.Timestamptz(3) @default(now())
@@ -20,8 +20,8 @@ model account {
   like        like[]
   course      course[]
   comment     comment[]
-  cart        cart?
-  @@unique([email, username])
+  cart        cart[]
+  product     product[]
 }
 
 enum Role {
@@ -31,7 +31,8 @@ enum Role {
 
 model course {
   id          String      @id @default(uuid()) @db.Uuid 
-  url         String      @db.VarChar(512)
+  url         String      @db.VarChar(255)
+  img_cover   String      @db.VarChar(255)
   title       String      @db.VarChar(100)
   caption     String      @db.Text
   label       Label?   
@@ -64,16 +65,20 @@ model like {
   course_id   String  @db.Uuid
   account     account @relation(fields: [account_id], references: [id], onDelete: Cascade)
   account_id  String  @db.Uuid
+  @@unique([course_id, account_id])
 }
 
 model product {
-  id              String  @id @default(uuid()) @db.Uuid 
-  name            String  @db.VarChar(100)
+  id              String   @id @default(uuid()) @db.Uuid 
+  img_url         String   @db.VarChar(512)
+  name            String   @db.VarChar(100)
   price           Int
   stock           Int 
-  description     String  @db.Text
-  course          course  @relation(fields: [course_id], references: [id], onDelete: Cascade)
-  course_id       String  @db.Uuid
+  description     String   @db.Text
+  account         account  @relation(fields: [account_id], references: [id], onDelete: Cascade)  
+  account_id      String   @db.Uuid
+  course          course?  @relation(fields: [course_id], references: [id], onDelete: Cascade)
+  course_id       String?  @db.Uuid
   qty             qty[]
 }
 
@@ -108,7 +113,7 @@ model invoice {
 model invoice_detail  {
   id          String    @id @db.Uuid @default(uuid())
   total_cost  Int       @default(0)
-  date        DateTime  @db.Timestamptz(3) @default(now())
+  date        DateTime  @db.Date @default(now())
   invoice     invoice   @relation(fields: [invoice_id], references: [id], onDelete: Cascade)
   invoice_id  String    @db.Uuid
   cart        cart      @relation(fields: [cart_id], references: [id], onDelete: Cascade)
