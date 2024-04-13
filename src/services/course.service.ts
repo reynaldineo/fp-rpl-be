@@ -2,17 +2,19 @@ import { Service } from "typedi";
 import db from "../config/database.js";
 import { actCourse, addComment } from "../interfaces/course.interface.js";
 import { HttpException } from "../exceptions/HttpException.js";
-import { commentInfo, courseDetail, courseInfo, courseInfoByUsername, courseProd } from "../types/course.type.js";
+import { commentInfo, courseDetail, courseInfo, courseProd } from "../types/course.type.js";
 
 @Service()
 export class CourseService {
-  public getCourses = async () => {
+  public getCourses = async (limit: number, offset: number) => {
     return await db.course.findMany({
       select: courseInfo,
+      take: limit,
+      skip: offset,
     });
   };
 
-  public getCoursesByUsername = async (username: string) => {
+  public getCoursesByUsername = async (username: string, limit: number, offset: number) => {
     const account = await getAccountID(username);
     if (!account) {
       throw new HttpException(400, "There is no account with username: " + username);
@@ -21,7 +23,9 @@ export class CourseService {
       where: {
         account_id: account.id,
       },
-      select: courseInfoByUsername,
+      select: courseInfo,
+      take: limit,
+      skip: offset,
     });
   };
 
@@ -34,6 +38,19 @@ export class CourseService {
     });
   };
 
+  public getCoursesByTitle = async (limit: number, offset: number, searchDat: string) => {
+    return await db.course.findMany({
+      where: {
+        title: {
+          contains: searchDat,
+        },
+      },
+      select: courseInfo,
+      take: limit,
+      skip: offset,
+    });
+  };
+
   public getUsersLikeCourse = async (courseID: string) => {
     return await db.like.findMany({
       where: {
@@ -42,7 +59,7 @@ export class CourseService {
       select: {
         account: {
           select: {
-            email: true,
+            username: true,
           },
         },
       },
@@ -58,8 +75,9 @@ export class CourseService {
     });
   };
 
-  public giveLikeUnlike = async (attribute: actCourse, accountID: string) => {
-    const check = await isLiked(attribute, accountID);
+  public giveLikeUnlike = async (courseID: string, accountID: string) => {
+    const check = await isLiked(courseID, accountID);
+    console.log(check);
     return await db.$transaction([
       check
         ? db.like.delete({
@@ -72,7 +90,7 @@ export class CourseService {
           })
         : db.like.create({
             data: {
-              course_id: attribute.courseID,
+              course_id: courseID,
               account_id: accountID,
             },
             select: {
@@ -82,7 +100,7 @@ export class CourseService {
       check
         ? db.course.update({
             where: {
-              id: attribute.courseID,
+              id: courseID,
             },
             data: {
               like_count: {
@@ -95,7 +113,7 @@ export class CourseService {
           })
         : db.course.update({
             where: {
-              id: attribute.courseID,
+              id: courseID,
             },
             data: {
               like_count: {
@@ -120,10 +138,11 @@ export class CourseService {
     });
   };
 
-  public createCourse = async (attribute: actCourse, accountID: string) => {
+  public createCourse = async (attribute: actCourse, accountID?: string) => {
     return await db.course.create({
       data: {
         url: attribute.url,
+        img_cover: attribute.img_cover,
         title: attribute.title,
         caption: attribute.caption,
         account_id: accountID,
@@ -135,10 +154,13 @@ export class CourseService {
   };
 
   public editCourse = async (attribute: actCourse, accountID: string) => {
-    const check = await isOwned(attribute, accountID);
+    const check = await isOwned(attribute);
     if (!check) {
+      throw new HttpException(400, "There is no course with ID: " + attribute.courseID);
+    } else if (check && check.account_id !== accountID) {
       throw new HttpException(400, "You don't have permission to edit this course");
     }
+
     return await db.course.update({
       data: {
         title: attribute.title,
@@ -158,8 +180,10 @@ export class CourseService {
   };
 
   public deleteCourse = async (attribute: actCourse, accountID: string) => {
-    const check = await isOwned(attribute, accountID);
+    const check = await isOwned(attribute);
     if (!check) {
+      throw new HttpException(400, "There is no course with ID: " + attribute.courseID);
+    } else if (check && check.account_id !== accountID) {
       throw new HttpException(400, "You don't have permission to delete this course");
     }
     return await db.course.delete({
@@ -175,32 +199,21 @@ export class CourseService {
   };
 }
 
-export const getAccountID = (uname?: string, email?: string) => {
-  if (uname) {
-    return db.account.findFirst({
-      where: {
-        username: uname,
-      },
-      select: {
-        id: true,
-      },
-    });
-  } else {
-    return db.account.findFirst({
-      where: {
-        email: email,
-      },
-      select: {
-        id: true,
-      },
-    });
-  }
+export const getAccountID = (uname: string) => {
+  return db.account.findUnique({
+    where: {
+      username: uname,
+    },
+    select: {
+      id: true,
+    },
+  });
 };
 
-export const isLiked = (attribute: actCourse, accountID: string) => {
+export const isLiked = (courseID: string, accountID: string) => {
   return db.like.findFirst({
     where: {
-      course_id: attribute.courseID,
+      course_id: courseID,
       account_id: accountID,
     },
     select: {
@@ -209,13 +222,13 @@ export const isLiked = (attribute: actCourse, accountID: string) => {
   });
 };
 
-export const isOwned = (attribute: actCourse, accountID: string) => {
-  return db.course.findFirst({
+export const isOwned = (attribute: actCourse) => {
+  return db.course.findUnique({
     where: {
-      AND: {
-        id: attribute.courseID,
-        account_id: accountID,
-      },
+      id: attribute.courseID,
+    },
+    select: {
+      account_id: true,
     },
   });
 };

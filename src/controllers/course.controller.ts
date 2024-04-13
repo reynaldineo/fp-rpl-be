@@ -2,15 +2,27 @@ import { Container } from "typedi";
 import { CourseService } from "../services/course.service.js";
 import { responseOK } from "../utils/response.js";
 import { Request, Response, NextFunction } from "express";
-import { actCourse } from "../interfaces/course.interface.js";
 import { HttpException } from "../exceptions/HttpException.js";
+import { actCourse } from "../interfaces/course.interface.js";
 
 export class CourseController {
   public course = Container.get(CourseService);
 
   public getCourse = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const data = await this.course.getCourses();
+      let data: any;
+      if (req.query.search !== undefined) {
+        data = await this.course.getCoursesByTitle(
+          Number(req.query.limit),
+          Number(req.query.offset),
+          req.query.search as string,
+        );
+      } else {
+        data = await this.course.getCourses(Number(req.query.limit), Number(req.query.offset));
+      }
+      if (data.length === 0) {
+        throw new HttpException(400, "Course is currently empty");
+      }
       responseOK(res, "Courses are retrieved successfully", data);
     } catch (error) {
       next(error);
@@ -19,7 +31,11 @@ export class CourseController {
 
   public getByUsername = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const data = await this.course.getCoursesByUsername(req.params.username);
+      const data = await this.course.getCoursesByUsername(
+        req.params.username,
+        Number(req.query.limit),
+        Number(req.query.offset),
+      );
       if (data.length === 0) {
         throw new HttpException(400, "There is no course in this account");
       } else {
@@ -34,7 +50,7 @@ export class CourseController {
     try {
       const data = await this.course.getCourseByID(req.params.id);
       if (!data) {
-        throw new HttpException(400, "Course not found");
+        throw new HttpException(400, "There is no course with ID: " + req.params.id);
       } else {
         responseOK(res, "Success get course detail", data);
       }
@@ -48,6 +64,8 @@ export class CourseController {
       const data = await this.course.getUsersLikeCourse(req.params.id);
       if (!data) {
         throw new HttpException(400, "Course not found");
+      } else if (data.length === 0) {
+        responseOK(res, "No one likes this course");
       } else {
         responseOK(res, "Success get user who likes the course", data);
       }
@@ -61,6 +79,8 @@ export class CourseController {
       const data = await this.course.getProdsByCourse(req.params.id);
       if (!data) {
         throw new HttpException(400, "Course not found");
+      } else if (data.length === 0) {
+        responseOK(res, "No product in this course");
       } else {
         responseOK(res, "Success get product from course", data);
       }
@@ -71,8 +91,8 @@ export class CourseController {
 
   public addCourse = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { url, title, caption, label }: actCourse = req.body;
-      const data = await this.course.createCourse({ url, title, caption, label }, req.userId);
+      const { url, img_cover, title, caption, label }: actCourse = req.body;
+      const data = await this.course.createCourse({ url, img_cover, title, caption, label }, req.userId);
       responseOK(res, "Course is created successfully", data);
     } catch (error) {
       next(error);
@@ -81,7 +101,7 @@ export class CourseController {
 
   public tapLike = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const data = await this.course.giveLikeUnlike({ courseID: req.params.id }, req.userId);
+      const data = await this.course.giveLikeUnlike(req.params.id, req.userId);
       responseOK(res, "Course is liked or unliked successfully", data);
     } catch (error) {
       next(error);

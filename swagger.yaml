@@ -142,6 +142,25 @@ paths:
       tags:
         - course
       summary: Get all courses
+      parameters:   
+        - in: query
+          name: limit
+          schema: 
+            type: integer
+          required: true
+          description: The numbers of items to return
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          required: true
+          description: The numbers of items to skip before starting to collect the result set
+        - in: search
+          name: search
+          schema:
+            type: string
+          required: false
+          description: A string for getting the course which contains it in the title
       responses:
         200:
           description: 'OK'
@@ -151,12 +170,13 @@ paths:
               message: "Courses are retrieved successfully"
               data:
                 id: "course-id"
-                url: "course-url"
-                title: "course-title"
+                url: "course-vid-url"
+                img_cover: "course-imgcover-url"
+                title: "Cara mengolah sampah dengan cara..."
                 label: "Organik"
-                like_count: 3
+                like_count: 0
                 account:
-                  username: "owner-username"
+                  username: "John"
         400:
           description: 'Bad Request'
         401:
@@ -177,6 +197,18 @@ paths:
             type: string
           required: true
           description: The username of the user
+        - in: query
+          name: limit
+          schema: 
+            type: integer
+          required: true
+          description: The numbers of items to return
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          required: true
+          description: The numbers of items to skip before starting to collect the result set
       responses:
         200:
           description: 'OK'
@@ -186,12 +218,13 @@ paths:
               message: "Success get course by username"
               data:
                 id: "course-id"
-                url: "course-url"
-                title: "course-title"
+                url: "course-vid-url"
+                img_cover: "course-imgcover-url"
+                title: "Cara mengolah sampah dengan cara..."
                 label: "Organik"
                 like_count: 0
                 account:
-                  username: "owner-username"
+                  username: "John"
         400:
           description: 'Bad Request'
         401:
@@ -199,8 +232,8 @@ paths:
         500:
           description: 'Server Error'
   
-  # [GET] /course/detail/:courseID
-  /course/detail/{courseId}:
+  # [GET] /course/:courseID/detail
+  /course/{courseId}/detail:
     get:
       tags:
         - course
@@ -218,21 +251,22 @@ paths:
           examples:
             application/json:
               success: true
-              message: "Success get course detail"
+              murse-captionessage: "Success get course detail"
               data:
                 id: "course-id"
-                url: "course-url"
-                title: "course-title"
+                url: "course-vid-url"
+                img_cover: "course-imgcover-url"
+                title: "Cara mengolah sampah dengan cara..."
+                caption: "Berikut cara mengolah ..."
                 label: "Organik"
                 like_count: 0
+                uploaded_at: "course-upload-time"
                 account:
-                  id: "owner-id"
-                  email: "owner-email"
+                  username: "John"
                 comment:
                   account:
-                    id: "account-id who commented"
-                    email: "account-email who comments the course"
-                  comment: "detail of comment"
+                    username: "John"
+                  comment: "I just commented my own course"
         400:
           description: 'Bad Request'
         401:
@@ -240,8 +274,8 @@ paths:
         500:
           description: 'Server Error'
 
-  # [GET] /course/detail/:courseID/getLikes
-  /course/detail/{courseId}/getLikes:
+  # [GET] /course/:courseID/getLikes
+  /course/{courseId}/getLikes:
     get:
       tags:
         - course
@@ -262,7 +296,7 @@ paths:
               message: "Success get user who likes the course"
               data:
                 account:
-                  email: "account-email who likes the course"
+                  username: "John"
         400:
           description: 'Bad Request'
         401:
@@ -270,8 +304,8 @@ paths:
         500:
           description: 'Server Error'
 
-  # [GET] /course/detail/:courseID/productList
-  /course/detail/{courseId}/productList:
+  # [GET] /course/:courseID/product
+  /course/{courseId}/product:
     get:
       tags:
         - course
@@ -331,8 +365,8 @@ paths:
         500:
           description: 'Server Error'
   
-  # [POST] /course/detail/:courseID/addLike
-  /course/detail/{courseId}/tapLike:
+  # [POST] /course/{courseID}/tapLike
+  /course/{courseId}/tapLike:
     post:
       tags:
         - course
@@ -361,8 +395,8 @@ paths:
         500:
           description: 'Server Error'
 
-  # [POST] /course/detail/:courseID/addComment
-  /course/detail/{courseId}/addComment:
+  # [POST] /course/{courseID}/addComment
+  /course/{courseId}/addComment:
     post:
       tags:
         - course
@@ -398,8 +432,8 @@ paths:
         500:
           description: 'Server Error'
     
-  # [PUT] /course/detail/:courseID/update
-  /course/detail/{courseId}/update:
+  # [PUT] /course/{courseID}/update
+  /course/{courseId}/update:
     put:
       tags:
         - course
@@ -416,7 +450,7 @@ paths:
           required: true
           description: Course Object
           schema:
-            $ref: '#/definitions/Course'
+            $ref: '#/definitions/UpdateCourse'
       responses:
         200:
           description: 'OK'
@@ -436,8 +470,8 @@ paths:
         500:
           description: 'Server Error'
 
-  # [DELETE] /course/detail/:courseID/delete
-  /course/detail/{courseId}/delete:
+  # [DELETE] /course/{courseID}/delete
+  /course/{courseId}/delete:
     delete:
       tags:
         - course
@@ -609,8 +643,10 @@ definitions:
     properties:
       url:
         type: string
-        description: url
-        nullable: true
+        description: vid_url
+      img_cover:
+        type: string
+        description: imgcover_url
       title:
         type: string
         description: title
@@ -620,7 +656,18 @@ definitions:
       label:
         type: string
         description: label
-        nullable: true
+  UpdateCourse:
+    type: object
+    properties:
+      title:
+        type: string
+        description: title
+      caption:
+        type: string
+        description: caption
+      label:
+        type: string
+        description: label
   Comment:
     type: object
     properties:

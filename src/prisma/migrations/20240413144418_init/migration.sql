@@ -20,7 +20,8 @@ CREATE TABLE "account" (
 -- CreateTable
 CREATE TABLE "course" (
     "id" UUID NOT NULL,
-    "url" VARCHAR(512) NOT NULL,
+    "url" VARCHAR(255) NOT NULL,
+    "img_cover" VARCHAR(255) NOT NULL,
     "title" VARCHAR(100) NOT NULL,
     "caption" TEXT NOT NULL,
     "label" "Label",
@@ -58,7 +59,8 @@ CREATE TABLE "product" (
     "price" INTEGER NOT NULL,
     "stock" INTEGER NOT NULL,
     "description" TEXT NOT NULL,
-    "course_id" UUID NOT NULL,
+    "account_id" UUID NOT NULL,
+    "course_id" UUID,
 
     CONSTRAINT "product_pkey" PRIMARY KEY ("id")
 );
@@ -132,6 +134,9 @@ ALTER TABLE "like" ADD CONSTRAINT "like_course_id_fkey" FOREIGN KEY ("course_id"
 
 -- AddForeignKey
 ALTER TABLE "like" ADD CONSTRAINT "like_account_id_fkey" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "product" ADD CONSTRAINT "product_account_id_fkey" FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "product" ADD CONSTRAINT "product_course_id_fkey" FOREIGN KEY ("course_id") REFERENCES "course"("id") ON DELETE CASCADE ON UPDATE CASCADE;

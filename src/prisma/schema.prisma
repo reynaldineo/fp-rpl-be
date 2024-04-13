@@ -21,6 +21,7 @@ model account {
   course      course[]
   comment     comment[]
   cart        cart[]
+  product     product[]
 }
 
 enum Role {
@@ -30,7 +31,8 @@ enum Role {
 
 model course {
   id          String      @id @default(uuid()) @db.Uuid 
-  url         String      @db.VarChar(512)
+  url         String      @db.VarChar(255)
+  img_cover   String      @db.VarChar(255)
   title       String      @db.VarChar(100)
   caption     String      @db.Text
   label       Label?   
@@ -67,14 +69,16 @@ model like {
 }
 
 model product {
-  id              String  @id @default(uuid()) @db.Uuid 
-  img_url         String  @db.VarChar(512)
-  name            String  @db.VarChar(100)
+  id              String   @id @default(uuid()) @db.Uuid 
+  img_url         String   @db.VarChar(512)
+  name            String   @db.VarChar(100)
   price           Int
   stock           Int 
-  description     String  @db.Text
-  course          course  @relation(fields: [course_id], references: [id], onDelete: Cascade)
-  course_id       String  @db.Uuid
+  description     String   @db.Text
+  account         account  @relation(fields: [account_id], references: [id], onDelete: Cascade)  
+  account_id      String   @db.Uuid
+  course          course?  @relation(fields: [course_id], references: [id], onDelete: Cascade)
+  course_id       String?  @db.Uuid
   qty             qty[]
 }
 

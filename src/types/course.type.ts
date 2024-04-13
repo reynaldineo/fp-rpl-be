@@ -3,19 +3,7 @@ import { Prisma } from "@prisma/client";
 export const courseInfo: Prisma.courseSelect = {
   id: true,
   url: true,
-  title: true,
-  label: true,
-  like_count: true,
-  account: {
-    select: {
-      username: true,
-    },
-  },
-};
-
-export const courseInfoByUsername: Prisma.courseSelect = {
-  id: true,
-  url: true,
+  img_cover: true,
   title: true,
   label: true,
   like_count: true,
@@ -29,7 +17,7 @@ export const courseInfoByUsername: Prisma.courseSelect = {
 export const commentInfo: Prisma.commentSelect = {
   account: {
     select: {
-      email: true,
+      username: true,
     },
   },
   comment: true,
@@ -38,10 +26,12 @@ export const commentInfo: Prisma.commentSelect = {
 export const courseDetail: Prisma.courseSelect = {
   id: true,
   url: true,
+  img_cover: true,
   title: true,
   caption: true,
   label: true,
   like_count: true,
+  uploaded_at: true,
   account: {
     select: {
       username: true,
