@@ -4,6 +4,8 @@ import { responseOK } from "../utils/response.js";
 import { Request, Response, NextFunction } from "express";
 import { HttpException } from "../exceptions/HttpException.js";
 import { actCourse } from "../interfaces/course.interface.js";
+import { v2 as cloudinary } from "cloudinary";
+import { randomUUID } from "crypto";
 
 export class CourseController {
   public course = Container.get(CourseService);
@@ -91,8 +93,33 @@ export class CourseController {
 
   public addCourse = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { url, img_cover, title, caption, label }: actCourse = req.body;
-      const data = await this.course.createCourse({ url, img_cover, title, caption, label }, req.userId);
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+      const { title, caption, label }: actCourse = req.body;
+      const id = randomUUID();
+      const { secure_url: url }: { secure_url: string } = await cloudinary.uploader.upload(files.vid[0].path, {
+        resource_type: "video",
+        folder: "course/vid",
+        public_id: id,
+      });
+      const { secure_url: img_cover }: { secure_url: string } = await cloudinary.uploader.upload(
+        files.img_cover[0].path,
+        {
+          resource_type: "image",
+          folder: "course/img_cover",
+          public_id: id,
+        },
+      );
+      const data = await this.course.createCourse(
+        {
+          courseID: id,
+          url,
+          img_cover,
+          title,
+          caption,
+          label,
+        },
+        req.userId,
+      );
       responseOK(res, "Course is created successfully", data);
     } catch (error) {
       next(error);
@@ -131,6 +158,7 @@ export class CourseController {
   public deleteCourse = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = await this.course.deleteCourse({ courseID: req.params.id }, req.userId);
+      await cloudinary.api.delete_resources(["course/vid/" + data.id, "course/img_cover/" + data.id]);
       responseOK(res, "Course is deleted successfully", data);
     } catch (error) {
       next(error);

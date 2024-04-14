@@ -342,13 +342,33 @@ paths:
       tags:
         - course
       summary: Create a course
+      consumes: 
+        - multipart/form-data
       parameters:
-        - in: body
-          name: body
+        - in: formData
+          name: vid
           required: true
-          description: Course Object
-          schema:
-            $ref: '#/definitions/Course'
+          description: Video File
+          type: file
+        - in: formData
+          name: img_cover
+          required: true
+          description: Cover Image File
+          type: file
+        - in: formData
+          name: title
+          required: true
+          description: Course Title
+          type: string
+        - in: formData
+          name: caption
+          required: true
+          description: Course Caption
+          type: string
+        - in: formData
+          name: label
+          required: true
+          description: Course Label
       responses:
         200:
           description: 'OK'
@@ -450,7 +470,7 @@ paths:
           required: true
           description: Course Object
           schema:
-            $ref: '#/definitions/UpdateCourse'
+            $ref: '#/definitions/Course'
       responses:
         200:
           description: 'OK'
@@ -639,24 +659,6 @@ definitions:
       qty:
         type: number
   Course:
-    type: object
-    properties:
-      url:
-        type: string
-        description: vid_url
-      img_cover:
-        type: string
-        description: imgcover_url
-      title:
-        type: string
-        description: title
-      caption:
-        type: string
-        description: caption
-      label:
-        type: string
-        description: label
-  UpdateCourse:
     type: object
     properties:
       title:

@@ -138,13 +138,15 @@ export class CourseService {
     });
   };
 
-  public createCourse = async (attribute: actCourse, accountID?: string) => {
+  public createCourse = async (attribute: actCourse, accountID: string) => {
     return await db.course.create({
       data: {
+        id: attribute.courseID,
         url: attribute.url,
         img_cover: attribute.img_cover,
         title: attribute.title,
         caption: attribute.caption,
+        label: attribute.label,
         account_id: accountID,
       },
       select: {
