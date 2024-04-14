@@ -97,7 +97,7 @@ export class CourseController {
       const { title, caption, label }: actCourse = req.body;
       const id = randomUUID();
       const { secure_url: url }: { secure_url: string } = await cloudinary.uploader.upload(files.vid[0].path, {
-        resource_type: "image",
+        resource_type: "video",
         folder: "course/vid",
         public_id: id,
       });
@@ -158,6 +158,7 @@ export class CourseController {
   public deleteCourse = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = await this.course.deleteCourse({ courseID: req.params.id }, req.userId);
+      await cloudinary.api.delete_resources(["course/vid/" + data.id, "course/img_cover/" + data.id]);
       responseOK(res, "Course is deleted successfully", data);
     } catch (error) {
       next(error);
