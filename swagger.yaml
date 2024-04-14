@@ -566,6 +566,7 @@ paths:
           description: 'Server Error'
 
   # [DELETE] /store/cart/:id/delete
+  # [DELETE] /store/cart/:id/delete
   /store/cart/{productID}/delete:
     delete:
       tags:
