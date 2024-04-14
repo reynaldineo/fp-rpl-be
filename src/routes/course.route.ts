@@ -28,6 +28,7 @@ export class CourseRoute implements Routes {
       ]),
       this.user.addCourse,
     );
+    this.router.post(`${this.path}/create`, AuthMiddleware, this.user.addCourse);
     this.router.post(`${this.path}/:id/tapLike`, AuthMiddleware, this.user.tapLike); // like or unlike
     this.router.post(`${this.path}/:id/addComment`, AuthMiddleware, this.user.addComment);
     this.router.put(`${this.path}/:id/update`, AuthMiddleware, this.user.editCourse);

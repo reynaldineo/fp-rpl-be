@@ -149,6 +149,9 @@ export class CourseService {
         label: attribute.label,
         account_id: accountID,
       },
+      select: {
+        id: true,
+      },
     });
   };
 
