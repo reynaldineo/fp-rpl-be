@@ -3,6 +3,7 @@ import { Container } from "typedi";
 import { UserService } from "../services/users.service.js";
 import { HttpException } from "../exceptions/HttpException.js";
 import { UpdateUserDTO } from "../dtos/users.dto.js";
+import { responseOK } from "../utils/response.js";
 
 export class UserController {
   public user = Container.get(UserService);
@@ -19,7 +20,7 @@ export class UserController {
       if (!account) {
         throw new HttpException(400, "Can not find account details !");
       } else {
-        res.status(200).json(account);
+        responseOK(res, "Success get account details", account);
       }
       // eslint-disable-next-line prettier/prettier
     } catch (error) {
@@ -35,7 +36,7 @@ export class UserController {
   public GetRole = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const role = await this.user.GetRoles(req.userId);
-      res.status(200).json({ id: req.userId, role: role.role });
+      responseOK(res, "Success get role", { id: req.userId, role: role.role });
     } catch (error) {
       next(error);
     }
@@ -51,14 +52,7 @@ export class UserController {
       const props: UpdateUserDTO = req.body;
       const updatedData = await this.user.UpdateProperties(req.userId, props);
 
-      res.status(200).json({
-        message: "updated",
-        id: updatedData.id,
-        email: updatedData.email,
-        username: updatedData.username,
-        role: updatedData.role,
-        bio: updatedData.bio,
-      });
+      responseOK(res, "Success update account", updatedData);
     } catch (error) {
       next(error);
     }

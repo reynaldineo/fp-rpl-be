@@ -5,6 +5,7 @@ import { HttpException } from "../exceptions/HttpException.js";
 import { AuthService } from "../services/auth.service.js";
 import { UserService } from "../services/users.service.js";
 import { Hash } from "../utils/Argon2id.js";
+import { responseOK } from "../utils/response.js";
 
 export class AuthController {
   public user = Container.get(UserService);
@@ -48,7 +49,7 @@ export class AuthController {
 
       res.setHeader("Set-Cookie", [cookie]);
 
-      res.status(200).json({ message: "success", id: data.id, role: data.role, jwt: data.jwt });
+      responseOK(res, "Success login", { id: data.id, role: data.role, jwt: data.jwt });
     } catch (error) {
       next(error);
     }
