@@ -11,6 +11,9 @@ export class CourseService {
       select: courseInfo,
       take: limit,
       skip: offset,
+      orderBy: {
+        uploaded_at: "asc",
+      },
     });
   };
 
@@ -26,6 +29,9 @@ export class CourseService {
       select: courseInfo,
       take: limit,
       skip: offset,
+      orderBy: {
+        uploaded_at: "asc",
+      },
     });
   };
 
@@ -48,6 +54,9 @@ export class CourseService {
       select: courseInfo,
       take: limit,
       skip: offset,
+      orderBy: {
+        uploaded_at: "asc",
+      },
     });
   };
 

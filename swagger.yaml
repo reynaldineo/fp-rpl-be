@@ -155,7 +155,7 @@ paths:
             type: integer
           required: true
           description: The numbers of items to skip before starting to collect the result set
-        - in: search
+        - in: query
           name: search
           schema:
             type: string

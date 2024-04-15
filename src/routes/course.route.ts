@@ -14,7 +14,7 @@ export class CourseRoute implements Routes {
   }
 
   private initializeRoutes() {
-    this.router.get(`${this.path}`, AuthMiddleware, this.user.getCourse);
+    this.router.get(`${this.path}`, this.user.getCourse);
     this.router.get(`${this.path}/:username`, AuthMiddleware, this.user.getByUsername);
     this.router.get(`${this.path}/:id/detail`, AuthMiddleware, this.user.getByID);
     this.router.get(`${this.path}/:id/getLikes`, AuthMiddleware, this.user.getUserLikesCourse);

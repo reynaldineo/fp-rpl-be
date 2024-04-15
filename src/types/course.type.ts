@@ -6,6 +6,7 @@ export const courseInfo: Prisma.courseSelect = {
   img_cover: true,
   title: true,
   label: true,
+  caption: true,
   like_count: true,
   account: {
     select: {
