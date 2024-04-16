@@ -3,11 +3,19 @@ import db from "../config/database.js";
 import { actCourse, addComment } from "../interfaces/course.interface.js";
 import { HttpException } from "../exceptions/HttpException.js";
 import { commentInfo, courseDetail, courseInfo, courseProd } from "../types/course.type.js";
+import { Label } from "@prisma/client";
+import { StatusCodes } from "http-status-codes";
 
 @Service()
 export class CourseService {
-  public getCourses = async (limit: number, offset: number) => {
+  public getCourses = async (limit: number, offset: number, search: string, label: string) => {
     return await db.course.findMany({
+      where: {
+        title: {
+          contains: search,
+        },
+        label: label as Label,
+      },
       select: courseInfo,
       take: limit,
       skip: offset,
@@ -17,18 +25,16 @@ export class CourseService {
     });
   };
 
-  public getCoursesByUsername = async (username: string, limit: number, offset: number) => {
+  public getCoursesByUsername = async (username: string) => {
     const account = await getAccountID(username);
     if (!account) {
-      throw new HttpException(400, "There is no account with username: " + username);
+      throw new HttpException(StatusCodes.BAD_REQUEST, "There is no account with username: " + username);
     }
     return await db.course.findMany({
       where: {
         account_id: account.id,
       },
       select: courseInfo,
-      take: limit,
-      skip: offset,
       orderBy: {
         uploaded_at: "asc",
       },
@@ -37,25 +43,9 @@ export class CourseService {
 
   public getCourseByID = async (courseID: string) => {
     return await db.course.findUnique({
-      select: courseDetail,
+      include: courseDetail,
       where: {
         id: courseID,
-      },
-    });
-  };
-
-  public getCoursesByTitle = async (limit: number, offset: number, searchDat: string) => {
-    return await db.course.findMany({
-      where: {
-        title: {
-          contains: searchDat,
-        },
-      },
-      select: courseInfo,
-      take: limit,
-      skip: offset,
-      orderBy: {
-        uploaded_at: "asc",
       },
     });
   };
@@ -86,7 +76,6 @@ export class CourseService {
 
   public giveLikeUnlike = async (courseID: string, accountID: string) => {
     const check = await isLiked(courseID, accountID);
-    console.log(check);
     return await db.$transaction([
       check
         ? db.like.delete({
@@ -167,9 +156,9 @@ export class CourseService {
   public editCourse = async (attribute: actCourse, accountID: string) => {
     const check = await isOwned(attribute);
     if (!check) {
-      throw new HttpException(400, "There is no course with ID: " + attribute.courseID);
+      throw new HttpException(StatusCodes.BAD_REQUEST, "There is no course with ID: " + attribute.courseID);
     } else if (check && check.account_id !== accountID) {
-      throw new HttpException(400, "You don't have permission to edit this course");
+      throw new HttpException(StatusCodes.BAD_REQUEST, "You don't have permission to edit this course");
     }
 
     return await db.course.update({
@@ -186,6 +175,11 @@ export class CourseService {
         title: true,
         caption: true,
         label: true,
+        account: {
+          select: {
+            username: true,
+          },
+        },
       },
     });
   };
@@ -193,9 +187,9 @@ export class CourseService {
   public deleteCourse = async (attribute: actCourse, accountID: string) => {
     const check = await isOwned(attribute);
     if (!check) {
-      throw new HttpException(400, "There is no course with ID: " + attribute.courseID);
+      throw new HttpException(StatusCodes.BAD_REQUEST, "There is no course with ID: " + attribute.courseID);
     } else if (check && check.account_id !== accountID) {
-      throw new HttpException(400, "You don't have permission to delete this course");
+      throw new HttpException(StatusCodes.BAD_REQUEST, "You don't have permission to delete this course");
     }
     return await db.course.delete({
       where: {
@@ -203,8 +197,12 @@ export class CourseService {
       },
       select: {
         id: true,
-        url: true,
         title: true,
+        account: {
+          select: {
+            username: true,
+          },
+        },
       },
     });
   };

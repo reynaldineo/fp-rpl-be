@@ -24,15 +24,7 @@ export const commentInfo: Prisma.commentSelect = {
   comment: true,
 };
 
-export const courseDetail: Prisma.courseSelect = {
-  id: true,
-  url: true,
-  img_cover: true,
-  title: true,
-  caption: true,
-  label: true,
-  like_count: true,
-  uploaded_at: true,
+export const courseDetail: Prisma.courseInclude = {
   account: {
     select: {
       username: true,

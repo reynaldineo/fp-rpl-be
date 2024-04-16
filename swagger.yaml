@@ -27,7 +27,8 @@ paths:
           description: 'OK'
           examples:
             application/json:
-              message: "success"
+              success: true
+              message: "Success login"
               id: "user-id"
               role: "Konsumen"
               jwt: "token"
@@ -50,11 +51,12 @@ paths:
         schema:
           $ref: '#/definitions/Register'
       responses:
-        200:
-          description: 'OK'
+        201:
+          description: 'Created'
           examples:
             application/json:
-              message: "success"
+              success: true
+              message: "Success register"
               id: "user-id"
         400:
           description: 'Bad Request'
@@ -72,6 +74,8 @@ paths:
           description: 'OK'
           examples:
             application/json:
+              success: true
+              message: "Success get role"
               id: "user-id"
               role: "Produsen"
         400:
@@ -92,6 +96,8 @@ paths:
           description: 'OK'
           examples:
               application/json:
+                success: true
+                message: "Success get account details"
                 id: "user-id"
                 email: "user@example.com"
                 username: null
@@ -119,11 +125,12 @@ paths:
         schema:
           $ref: '#/definitions/Update'
       responses:
-        200:
-          description: 'OK'
+        201:
+          description: 'Created'
           examples:
               application/json:
-                message: "updated"
+                success: true
+                message: "Success update account"
                 id: "user-id"
                 email: "user@example.com"
                 username: null  
@@ -161,6 +168,12 @@ paths:
             type: string
           required: false
           description: A string for getting the course which contains it in the title
+        - in: query
+          name: label
+          schema:
+            type: string
+          required: false
+          description: A string for getting the course by it's label
       responses:
         200:
           description: 'OK'
@@ -174,13 +187,14 @@ paths:
                 img_cover: "course-imgcover-url"
                 title: "Cara mengolah sampah dengan cara..."
                 label: "Organik"
+                caption: "Berikut cara mengolah ..."
                 like_count: 0
                 account:
                   username: "John"
+                limit: 10
+                offset: 0
         400:
           description: 'Bad Request'
-        401:
-          description: Unauthorized
         500:
           description: 'Server Error'
 
@@ -197,31 +211,20 @@ paths:
             type: string
           required: true
           description: The username of the user
-        - in: query
-          name: limit
-          schema: 
-            type: integer
-          required: true
-          description: The numbers of items to return
-        - in: query
-          name: offset
-          schema:
-            type: integer
-          required: true
-          description: The numbers of items to skip before starting to collect the result set
       responses:
         200:
           description: 'OK'
           examples:
             application/json:
               success: true
-              message: "Success get course by username"
+              message: "Courses by username are retrieved successfully"
               data:
                 id: "course-id"
                 url: "course-vid-url"
                 img_cover: "course-imgcover-url"
                 title: "Cara mengolah sampah dengan cara..."
                 label: "Organik"
+                caption: "Berikut cara mengolah ..."
                 like_count: 0
                 account:
                   username: "John"
@@ -251,7 +254,7 @@ paths:
           examples:
             application/json:
               success: true
-              murse-captionessage: "Success get course detail"
+              message: "Course by ID is retrieved successfully"
               data:
                 id: "course-id"
                 url: "course-vid-url"
@@ -293,7 +296,7 @@ paths:
           examples:
             application/json:
               success: true
-              message: "Success get user who likes the course"
+              message: "Users who like this course are retrieved successfully"
               data:
                 account:
                   username: "John"
@@ -323,7 +326,7 @@ paths:
           examples:
             application/json:
               success: true
-              message: "Success get product from course"
+              message: "Products in this course are retrieved successfully"
               data:
                 id: "product-id"
                 img_url: "product-img-url"
@@ -370,8 +373,8 @@ paths:
           required: true
           description: Course Label
       responses:
-        200:
-          description: 'OK'
+        201:
+          description: 'Created'
           examples:
             application/json:
               success: true
@@ -399,8 +402,8 @@ paths:
           required: true
           description: The ID of the course
       responses:
-        200:
-          description: 'OK'
+        201:
+          description: 'Created'
           examples:
             application/json:
               success: true
@@ -435,15 +438,15 @@ paths:
           schema:
             $ref: '#/definitions/Comment'
       responses:
-        200:
-          description: 'OK'
+        201:
+          description: 'Created'
           examples:
             application/json:
               success: true
               message: "Comment is created successfully"
               data:
                 account:
-                  email: "user-email that just commented"
+                  username: "username that just commented"
                 comment: "detail of comment"
         400:
           description: 'Bad Request'
@@ -472,8 +475,8 @@ paths:
           schema:
             $ref: '#/definitions/Course'
       responses:
-        200:
-          description: 'OK'
+        201:
+          description: 'Created'
           examples:
             application/json:
               success: true
@@ -482,7 +485,9 @@ paths:
                 id: "course-id"
                 title: "new course-title"
                 caption: "new course-caption"
-                label: "new course-label, Organik or Anorganik" 
+                label: "new course-label" 
+                account:
+                  username: "username that just updated"
         400:
           description: 'Bad Request'
         401:
@@ -504,16 +509,17 @@ paths:
           required: true
           description: The ID of the course
       responses:
-        200:
-          description: 'OK'
+        201:
+          description: 'Created'
           examples:
             application/json:
               success: true
               message: "Course is deleted successfully"
               data:
                 id: "course-id that just deleted"
-                url: "course-url that just deleted"
                 title: "course-title that just deleted"
+                account:
+                  username: "username that just deleted"
         400:
           description: 'Bad Request'
         401:

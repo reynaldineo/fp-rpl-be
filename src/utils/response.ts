@@ -1,9 +1,12 @@
 import { Response } from "express";
+import { responseAPI } from "../interfaces/response.interface.js";
 
-export const responseOK = (res: Response, message: string, data?: any) => {
-  return res.status(200).json({
+export const responseSuccess = (res: Response, response: responseAPI) => {
+  return res.status(response.status).json({
     success: true,
-    message: message,
-    data: data,
+    message: response.message,
+    data: response.data,
+    limit: response.limit,
+    offset: response.offset,
   });
 };

@@ -5,7 +5,8 @@ import { HttpException } from "../exceptions/HttpException.js";
 import { AuthService } from "../services/auth.service.js";
 import { UserService } from "../services/users.service.js";
 import { Hash } from "../utils/Argon2id.js";
-import { responseOK } from "../utils/response.js";
+import { responseSuccess } from "../utils/response.js";
+import { StatusCodes } from "http-status-codes";
 
 export class AuthController {
   public user = Container.get(UserService);
@@ -21,7 +22,7 @@ export class AuthController {
       const register: RegisterDTO = req.body;
 
       if (await this.user.CheckUserByEmail(register.email)) {
-        throw new HttpException(400, "Email already been used");
+        throw new HttpException(StatusCodes.BAD_REQUEST, "Email already been used");
       }
 
       const account = await this.auth.addAccount({
@@ -29,8 +30,11 @@ export class AuthController {
         password: await Hash(register.password),
         created_at: new Date(),
       });
-
-      res.status(200).json({ message: "success", id: account.id });
+      responseSuccess(res, {
+        status: StatusCodes.CREATED,
+        message: "Success register",
+        data: account.id,
+      });
     } catch (error) {
       next(error);
     }
@@ -49,7 +53,11 @@ export class AuthController {
 
       res.setHeader("Set-Cookie", [cookie]);
 
-      responseOK(res, "Success login", { id: data.id, role: data.role, jwt: data.jwt });
+      responseSuccess(res, {
+        status: StatusCodes.OK,
+        message: "Success login",
+        data,
+      });
     } catch (error) {
       next(error);
     }
