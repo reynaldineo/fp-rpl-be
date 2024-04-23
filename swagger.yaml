@@ -526,7 +526,197 @@ paths:
           description: Unauthorized
         500:
           description: 'Server Error'
+  
+  # [GET] /store
+  /store:
+    get:
+      tags:
+      - store
+      summary: Get the products in the store
+      responses:
+        200:
+          description: 'OK'
+          examples:
+            application/json:
+              success: true
+              message: "Products are retrieved successfully"
+              data:
+                id: "product-id"
+                img_url: "product-img-url"
+                name: "product-name"
+                price: 3000
+                account:
+                  username: "user1234"
+        204:
+          description: 'No Content'
+        500:
+          description: 'Server Error'
       
+   # [GET] /store/:productID
+  /store/{productID}:
+    get:
+      tags:
+      - store
+      summary: Get product details
+      parameters:
+        - in: path
+          name: productID
+          schema:
+            type: string
+          required: true
+          description: The ID of the product
+      responses:
+        200:
+          description: 'OK'
+          examples:
+            application/json:
+              success: true
+              message: "Product is retrieved successfully"
+              data:
+                id: "product-id"
+                img_url: "product-img-url"
+                name: "product-name"
+                price: 3000
+                stock: 10
+                description: "product-description"
+                account:
+                  username: "user1234"
+        400:
+          description: 'Bad Request'
+        401:
+          description: Unauthorized
+        500:
+          description: 'Server Error'
+    
+  # [POST] /store/create
+  /store/create:
+    post:
+      tags:
+      - store
+      summary: Add a product in the store
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: img
+          required: true
+          description: Product Image 
+          type: file
+      responses:
+        201:
+          description: 'Created'
+          examples:
+            application/json:
+              success: true
+              message: "Product is created successfully"
+              data:
+                id: "product-id"
+                img_url: "product-img-url"
+                name: "product-name"
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        500:
+          description: 'Server Error'
+
+  # [PUT] /store/update/:productID
+  /store/update/{productID}:
+    put:
+      tags:
+      - store
+      summary: Update a product in the store
+      parameters:
+        - in: path
+          name: productID
+          schema:
+            type: string
+          required: true
+          description: The ID of the product
+        - in: body
+          name: body
+          required: true
+          description: Product Object
+          schema:
+            $ref: '#/definitions/Product'
+      responses:
+        201:
+          description: 'Created'
+          examples:
+            application/json:
+              success: true
+              message: "Product is updated successfully"
+              data:
+                id: "product-id"
+                img_url: "product-img-url"
+                name: "product-new-name"
+                price: "product-new-price"
+                stock: "product-new-stock"
+                description: "product-new-description"
+        400:
+          description: 'Bad Request'
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        500:
+          description: 'Server Error'
+
+  # [DELETE] /store/delete/:productID
+  /store/delete/{productID}:
+    delete:
+      tags:
+      - store
+      summary: Delete a product in the store
+      parameters:
+        - in: path
+          name: productID
+          schema:
+            type: string
+          required: true
+          description: The ID of the product
+      responses:
+        201:
+          description: 'Created'
+          examples:
+            application/json:
+              success: true
+              message: "Product is deleted successfully"
+              data:
+                id: "product-id"
+                img_url: "product-img-url"
+                name: "product-name"
+        400:
+          description: 'Bad Request'
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
+        500:
+          description: 'Server Error'
+
+
+  # [GET] /store/cart
+  /store/cart:
+    get:
+      tags:
+      - store
+      summary: Get the cart
+      responses:
+        200:
+          description: 'OK'
+          examples:
+            application/json:
+              success: true
+              message: "Cart is retrieved successfully"
+              data:
+                id: "cart-id"
+                product:  
+                  img_url: "product-img-url"
+                  name: "product-name"
+                  price: 3000
+                quantity: 1
+
   # [PUT] /store/cart/:productID/update
   /store/cart/{productID}/update:
     put:
@@ -682,6 +872,21 @@ definitions:
       comment:
         type: string
         description: comment
+  Product: 
+    type: object
+    properties:
+      name:
+        type: string
+        description: Product name
+      price:
+        type: number
+        description: Product price
+      stock:
+        type: number
+        description: Product stock
+      description:
+        type: string
+        description: Product description
 schemes:
  - https
  - http

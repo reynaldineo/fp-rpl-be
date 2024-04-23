@@ -158,7 +158,7 @@ export class CourseService {
     if (!check) {
       throw new HttpException(StatusCodes.BAD_REQUEST, "There is no course with ID: " + attribute.courseID);
     } else if (check && check.account_id !== accountID) {
-      throw new HttpException(StatusCodes.BAD_REQUEST, "You don't have permission to edit this course");
+      throw new HttpException(StatusCodes.FORBIDDEN, "You don't have permission to edit this course");
     }
 
     return await db.course.update({
@@ -189,7 +189,7 @@ export class CourseService {
     if (!check) {
       throw new HttpException(StatusCodes.BAD_REQUEST, "There is no course with ID: " + attribute.courseID);
     } else if (check && check.account_id !== accountID) {
-      throw new HttpException(StatusCodes.BAD_REQUEST, "You don't have permission to delete this course");
+      throw new HttpException(StatusCodes.FORBIDDEN, "You don't have permission to delete this course");
     }
     return await db.course.delete({
       where: {
