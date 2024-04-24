@@ -7,8 +7,24 @@ import { StatusCodes } from "http-status-codes";
 
 @Service()
 export class StoreService {
-  public getProds = async () => {
-    return await db.product.findMany({
+  public getProds = async (pageSize: number, pageNumber: number, search: string) => {
+    const totalCount = await db.product.count({
+      where: {
+        name: {
+          contains: search,
+        },
+      },
+    });
+
+    const maxPage = Math.ceil(totalCount / pageSize);
+    const offset = (pageNumber - 1) * pageSize;
+
+    const query = await db.product.findMany({
+      where: {
+        name: {
+          contains: search,
+        },
+      },
       select: {
         id: true,
         img_url: true,
@@ -20,7 +36,16 @@ export class StoreService {
           },
         },
       },
+      take: pageSize,
+      skip: offset,
     });
+
+    return {
+      query,
+      pageNumber,
+      pageSize,
+      maxPage,
+    };
   };
 
   public getProdDetail = async (id: string) => {

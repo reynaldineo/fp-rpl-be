@@ -3,7 +3,7 @@ import { Routes } from "../interfaces/routes.interface.js";
 import { StoreController } from "../controllers/store.controller.js";
 import { AuthMiddleware } from "../middlewares/auth.middleware.js";
 import { ValidationMiddleware } from "../middlewares/validation.middleware.js";
-import { updateCartDTO } from "../dtos/store.dto.js";
+import { addProdDTO, updateCartDTO } from "../dtos/store.dto.js";
 
 export class StoreRoute implements Routes {
   public path = "/store";
@@ -16,9 +16,19 @@ export class StoreRoute implements Routes {
 
   private initializeRoutes() {
     this.router.get(`${this.path}`, this.user.getProds);
-    this.router.get(`${this.path}/:id`, AuthMiddleware, this.user.getProdDetail);
-    this.router.post(`${this.path}/create`, AuthMiddleware, this.user.createProd);
-    this.router.put(`${this.path}/update/:id`, AuthMiddleware, this.user.updateProd);
+    this.router.get(`${this.path}/:id`, AuthMiddleware, this.user.getByID);
+    this.router.post(
+      `${this.path}/create`,
+      AuthMiddleware,
+      ValidationMiddleware(addProdDTO, true, true),
+      this.user.createProd,
+    );
+    this.router.put(
+      `${this.path}/update/:id`,
+      AuthMiddleware,
+      ValidationMiddleware(addProdDTO, true, true),
+      this.user.updateProd,
+    );
     this.router.delete(`${this.path}/delete/:id`, AuthMiddleware, this.user.delProd);
     this.router.get(`${this.path}/cart`, AuthMiddleware, this.user.getCart);
     this.router.put(

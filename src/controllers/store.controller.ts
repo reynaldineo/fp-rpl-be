@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import { StoreService } from "../services/store.service.js";
 import { responseSuccess } from "../utils/response.js";
 import { StatusCodes } from "http-status-codes";
-import { updateCartDTO } from "../dtos/store.dto.js";
+import { addProdDTO, updateCartDTO } from "../dtos/store.dto.js";
 import { HttpException } from "../exceptions/HttpException.js";
 import { v2 as cloudinary } from "cloudinary";
 import { randomUUID } from "crypto";
@@ -13,8 +13,10 @@ export class StoreController {
 
   public getProds = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const data = await this.store.getProds();
-      if (data.length === 0) {
+      const { size, page, search } = req.query;
+
+      const data = await this.store.getProds(Number(size), Number(page), search as string);
+      if (data.query.length === 0) {
         responseSuccess(res, {
           status: StatusCodes.NO_CONTENT,
           message: "There is no product in the store",
@@ -23,14 +25,17 @@ export class StoreController {
       responseSuccess(res, {
         status: StatusCodes.OK,
         message: "Products are retrieved successfully",
-        data,
+        data: data.query,
+        pageNumber: data.pageNumber,
+        pageSize: data.pageSize,
+        maxPage: data.maxPage,
       });
     } catch (error) {
       next(error);
     }
   };
 
-  public getProdDetail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public getByID = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const data = await this.store.getProdDetail(req.params.id);
       if (!data) {
@@ -49,7 +54,7 @@ export class StoreController {
   public createProd = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-      const { name, price, stock, description } = req.body;
+      const { name, price, stock, description }: addProdDTO = req.body;
       const { secure_url: img_url }: { secure_url: string } = await cloudinary.uploader.upload(files.img[0].path, {
         resource_type: "image",
         folder: "product",
@@ -68,7 +73,7 @@ export class StoreController {
 
   public updateProd = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { name, price, stock, description } = req.body;
+      const { name, price, stock, description }: addProdDTO = req.body;
       const data = await this.store.updateProd({ name, price, stock, description }, req.params.id, req.userId);
       if (!data) {
         throw new HttpException(StatusCodes.BAD_REQUEST, "There is no product with id: " + req.params.id);

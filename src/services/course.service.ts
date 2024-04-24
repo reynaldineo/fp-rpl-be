@@ -8,8 +8,20 @@ import { StatusCodes } from "http-status-codes";
 
 @Service()
 export class CourseService {
-  public getCourses = async (limit: number, offset: number, search: string, label: string) => {
-    return await db.course.findMany({
+  public getCourses = async (pageSize: number, pageNumber: number, search: string, label: string) => {
+    const totalCount = await db.course.count({
+      where: {
+        title: {
+          contains: search,
+        },
+        label: label as Label,
+      },
+    });
+
+    const maxPage = Math.ceil(totalCount / pageSize);
+    const offset = (pageNumber - 1) * pageSize;
+
+    const query = await db.course.findMany({
       where: {
         title: {
           contains: search,
@@ -17,12 +29,18 @@ export class CourseService {
         label: label as Label,
       },
       select: courseInfo,
-      take: limit,
+      take: pageSize,
       skip: offset,
       orderBy: {
         uploaded_at: "asc",
       },
     });
+    return {
+      query,
+      pageNumber,
+      pageSize,
+      maxPage,
+    };
   };
 
   public getCoursesByUsername = async (username: string) => {
