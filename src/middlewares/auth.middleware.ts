@@ -24,13 +24,11 @@ const getAuthorization = (req: Request) => {
 export const AuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const Authorization = getAuthorization(req);
-    console.log(Authorization);
     if (!Authorization) next(new HttpException(401, "Authorization header or cookie is missing"));
 
     const token = await VerifyToken(Authorization);
     if ((token as JwtPayload).id) {
       req.userId = (token as JwtPayload).id;
-      console.log(req.userId);
       next();
     } else {
       next(new HttpException(401, "Wrong Authentication Tokens"));

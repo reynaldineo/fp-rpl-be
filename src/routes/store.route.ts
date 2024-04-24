@@ -3,7 +3,8 @@ import { Routes } from "../interfaces/routes.interface.js";
 import { StoreController } from "../controllers/store.controller.js";
 import { AuthMiddleware } from "../middlewares/auth.middleware.js";
 import { ValidationMiddleware } from "../middlewares/validation.middleware.js";
-import { addProdDTO, updateCartDTO } from "../dtos/store.dto.js";
+import { updateCartDTO, updateProdDTO } from "../dtos/store.dto.js";
+import { upload } from "../config/index.js";
 
 export class StoreRoute implements Routes {
   public path = "/store";
@@ -20,13 +21,13 @@ export class StoreRoute implements Routes {
     this.router.post(
       `${this.path}/create`,
       AuthMiddleware,
-      ValidationMiddleware(addProdDTO, true, true),
+      upload.fields([{ name: "product_img", maxCount: 1 }]),
       this.user.createProd,
     );
     this.router.put(
       `${this.path}/update/:id`,
       AuthMiddleware,
-      ValidationMiddleware(addProdDTO, true, true),
+      ValidationMiddleware(updateProdDTO, true, true),
       this.user.updateProd,
     );
     this.router.delete(`${this.path}/delete/:id`, AuthMiddleware, this.user.delProd);

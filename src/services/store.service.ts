@@ -128,9 +128,6 @@ export class StoreService {
   public getCartDetail = async (acc_id: string) => {
     const { id: cart_id }: { id: string } = await getCurCart(acc_id);
     return await db.qty.findMany({
-      where: {
-        cart_id,
-      },
       select: {
         id: true,
         product: {
@@ -141,6 +138,9 @@ export class StoreService {
           },
         },
         quantity: true,
+      },
+      where: {
+        cart_id,
       },
     });
   };

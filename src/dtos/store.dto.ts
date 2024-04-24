@@ -1,4 +1,4 @@
-import { IsInt, IsString, Length, Min } from "class-validator";
+import { IsInt, IsString, MaxLength, Min } from "class-validator";
 
 export class updateCartDTO {
   @IsInt({ message: "Quantity must be an integer" })
@@ -6,9 +6,9 @@ export class updateCartDTO {
   public qty: number;
 }
 
-export class addProdDTO {
+export class updateProdDTO {
   @IsString({ message: "Title must be a string" })
-  @Length(5, 100, { message: "Title must be between 5 and 100 characters" })
+  @MaxLength(100, { message: "Title must be less than 100 characters" })
   public name: string;
 
   @IsInt({ message: "Price must be an integer" })

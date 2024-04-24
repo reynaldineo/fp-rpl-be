@@ -92,6 +92,23 @@ export class CourseService {
     });
   };
 
+  public createCourse = async (attribute: actCourse, accountID: string) => {
+    return await db.course.create({
+      data: {
+        id: attribute.courseID,
+        url: attribute.url,
+        img_cover: attribute.img_cover,
+        title: attribute.title,
+        caption: attribute.caption,
+        label: attribute.label,
+        account_id: accountID,
+      },
+      select: {
+        id: true,
+      },
+    });
+  };
+
   public giveLikeUnlike = async (courseID: string, accountID: string) => {
     const check = await isLiked(courseID, accountID);
     return await db.$transaction([
@@ -151,23 +168,6 @@ export class CourseService {
         comment: attribute.comment,
       },
       select: commentInfo,
-    });
-  };
-
-  public createCourse = async (attribute: actCourse, accountID: string) => {
-    return await db.course.create({
-      data: {
-        id: attribute.courseID,
-        url: attribute.url,
-        img_cover: attribute.img_cover,
-        title: attribute.title,
-        caption: attribute.caption,
-        label: attribute.label,
-        account_id: accountID,
-      },
-      select: {
-        id: true,
-      },
     });
   };
 

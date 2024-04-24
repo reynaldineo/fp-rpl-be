@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import { StoreService } from "../services/store.service.js";
 import { responseSuccess } from "../utils/response.js";
 import { StatusCodes } from "http-status-codes";
-import { addProdDTO, updateCartDTO } from "../dtos/store.dto.js";
+import { updateCartDTO, updateProdDTO } from "../dtos/store.dto.js";
 import { HttpException } from "../exceptions/HttpException.js";
 import { v2 as cloudinary } from "cloudinary";
 import { randomUUID } from "crypto";
@@ -54,13 +54,26 @@ export class StoreController {
   public createProd = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-      const { name, price, stock, description }: addProdDTO = req.body;
-      const { secure_url: img_url }: { secure_url: string } = await cloudinary.uploader.upload(files.img[0].path, {
-        resource_type: "image",
-        folder: "product",
-        public_id: randomUUID(),
-      });
-      const data = await this.store.addProd({ img_url, name, price, stock, description }, req.userId);
+      const { name, price, stock, description } = req.body;
+      const priceNum = Number(price);
+      const stockNum = Number(stock);
+      if (priceNum < 0 || stockNum < 0) {
+        throw new HttpException(StatusCodes.BAD_REQUEST, "Price and stock must be greater than 0");
+      }
+
+      const id = randomUUID();
+      const { secure_url: img_url }: { secure_url: string } = await cloudinary.uploader.upload(
+        files.product_img[0].path,
+        {
+          resource_type: "image",
+          folder: "product",
+          public_id: id,
+        },
+      );
+      const data = await this.store.addProd(
+        { id, img_url, name, price: priceNum, stock: stockNum, description },
+        req.userId,
+      );
       responseSuccess(res, {
         status: StatusCodes.CREATED,
         message: "Product is created successfully",
@@ -73,7 +86,7 @@ export class StoreController {
 
   public updateProd = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { name, price, stock, description }: addProdDTO = req.body;
+      const { name, price, stock, description }: updateProdDTO = req.body;
       const data = await this.store.updateProd({ name, price, stock, description }, req.params.id, req.userId);
       if (!data) {
         throw new HttpException(StatusCodes.BAD_REQUEST, "There is no product with id: " + req.params.id);
@@ -107,6 +120,7 @@ export class StoreController {
 
   public getCart = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      console.log(req.userId);
       const data = await this.store.getCartDetail(req.userId);
       if (data.length === 0) {
         responseSuccess(res, {
