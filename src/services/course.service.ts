@@ -8,8 +8,20 @@ import { StatusCodes } from "http-status-codes";
 
 @Service()
 export class CourseService {
-  public getCourses = async (limit: number, offset: number, search: string, label: string) => {
-    return await db.course.findMany({
+  public getCourses = async (pageSize: number, pageNumber: number, search: string, label: string) => {
+    const totalCount = await db.course.count({
+      where: {
+        title: {
+          contains: search,
+        },
+        label: label as Label,
+      },
+    });
+
+    const maxPage = Math.ceil(totalCount / pageSize);
+    const offset = (pageNumber - 1) * pageSize;
+
+    const query = await db.course.findMany({
       where: {
         title: {
           contains: search,
@@ -17,12 +29,18 @@ export class CourseService {
         label: label as Label,
       },
       select: courseInfo,
-      take: limit,
+      take: pageSize,
       skip: offset,
       orderBy: {
         uploaded_at: "asc",
       },
     });
+    return {
+      query,
+      pageNumber,
+      pageSize,
+      maxPage,
+    };
   };
 
   public getCoursesByUsername = async (username: string) => {
@@ -71,6 +89,23 @@ export class CourseService {
         course_id: courseID,
       },
       select: courseProd,
+    });
+  };
+
+  public createCourse = async (attribute: actCourse, accountID: string) => {
+    return await db.course.create({
+      data: {
+        id: attribute.courseID,
+        url: attribute.url,
+        img_cover: attribute.img_cover,
+        title: attribute.title,
+        caption: attribute.caption,
+        label: attribute.label,
+        account_id: accountID,
+      },
+      select: {
+        id: true,
+      },
     });
   };
 
@@ -136,29 +171,12 @@ export class CourseService {
     });
   };
 
-  public createCourse = async (attribute: actCourse, accountID: string) => {
-    return await db.course.create({
-      data: {
-        id: attribute.courseID,
-        url: attribute.url,
-        img_cover: attribute.img_cover,
-        title: attribute.title,
-        caption: attribute.caption,
-        label: attribute.label,
-        account_id: accountID,
-      },
-      select: {
-        id: true,
-      },
-    });
-  };
-
   public editCourse = async (attribute: actCourse, accountID: string) => {
     const check = await isOwned(attribute);
     if (!check) {
       throw new HttpException(StatusCodes.BAD_REQUEST, "There is no course with ID: " + attribute.courseID);
     } else if (check && check.account_id !== accountID) {
-      throw new HttpException(StatusCodes.BAD_REQUEST, "You don't have permission to edit this course");
+      throw new HttpException(StatusCodes.FORBIDDEN, "You don't have permission to edit this course");
     }
 
     return await db.course.update({
@@ -189,7 +207,7 @@ export class CourseService {
     if (!check) {
       throw new HttpException(StatusCodes.BAD_REQUEST, "There is no course with ID: " + attribute.courseID);
     } else if (check && check.account_id !== accountID) {
-      throw new HttpException(StatusCodes.BAD_REQUEST, "You don't have permission to delete this course");
+      throw new HttpException(StatusCodes.FORBIDDEN, "You don't have permission to delete this course");
     }
     return await db.course.delete({
       where: {

@@ -6,7 +6,8 @@ export const responseSuccess = (res: Response, response: responseAPI) => {
     success: true,
     message: response.message,
     data: response.data,
-    limit: response.limit,
-    offset: response.offset,
+    pageNumber: response.pageNumber,
+    pageSize: response.pageSize,
+    maxPage: response.maxPage,
   });
 };

@@ -3,10 +3,11 @@ export interface qtyAtt {
   cart_id: string;
 }
 
-export interface cartAtt {
-  acc_id: string;
-}
-
 export interface prodAtt {
-  id: string;
+  id?: string;
+  img_url?: string;
+  name: string;
+  price: number;
+  stock: number;
+  description: string;
 }

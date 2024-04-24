@@ -2,6 +2,7 @@ export interface responseAPI {
   status: number;
   message: string;
   data?: any;
-  limit?: number;
-  offset?: number;
+  pageNumber?: number;
+  pageSize?: number;
+  maxPage?: number;
 }

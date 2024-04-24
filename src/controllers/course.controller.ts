@@ -13,10 +13,10 @@ export class CourseController {
 
   public getCourse = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { limit, offset, search, label } = req.query;
+      const { size, page, search, label } = req.query;
 
-      const data = await this.course.getCourses(Number(limit), Number(offset), search as string, label as string);
-      if (data.length === 0) {
+      const data = await this.course.getCourses(Number(size), Number(page), search as string, label as string);
+      if (data.query.length === 0) {
         responseSuccess(res, {
           status: StatusCodes.NO_CONTENT,
           message: "There is no course in this account",
@@ -25,9 +25,10 @@ export class CourseController {
       responseSuccess(res, {
         status: StatusCodes.OK,
         message: "Courses are retrieved successfully",
-        data,
-        limit: Number(limit),
-        offset: Number(offset),
+        data: data.query,
+        pageNumber: data.pageNumber,
+        pageSize: data.pageSize,
+        maxPage: data.maxPage,
       });
     } catch (error) {
       next(error);
