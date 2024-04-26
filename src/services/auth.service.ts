@@ -18,8 +18,10 @@ export class AuthService {
       const createdAccount = await tx.account.create({
         data: {
           email: account.email,
+          username: account.username,
           password: account.password,
         },
+        select: { id: true, email: true, username: true },
       });
 
       await tx.cart.create({ data: { account_id: createdAccount.id, current_cost: 0 } });
@@ -30,12 +32,12 @@ export class AuthService {
   /**
    * Authenticates a user by checking their email and password
    * @param {LoginDTO} account - The login information
-   * @returns A promise that resolves to an object containing the user's ID , role, and password
+   * @returns A promise that resolves to an object containing the user's ID and password
    * @throws {HttpException} Throws a 400 error if the email is not found or if the password is incorrect
    */
   public async login(account: LoginDTO) {
     const user = await db.account.findFirst({
-      select: { id: true, role: true, password: true },
+      select: { id: true, password: true },
       where: { email: account.email },
     });
 
@@ -43,7 +45,7 @@ export class AuthService {
     if (!(await Verify(user.password, account.password))) throw new HttpException(400, "Wrong email or Password");
 
     const jwt = await CreateToken(user.id);
-    return { id: user.id, role: user.role, jwt };
+    return { id: user.id, jwt };
   }
 
   /**

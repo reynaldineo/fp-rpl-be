@@ -25,15 +25,19 @@ export class AuthController {
         throw new HttpException(StatusCodes.BAD_REQUEST, "Email already been used");
       }
 
+      if (await this.user.CheckUserByUsername(register.username)) {
+        throw new HttpException(StatusCodes.BAD_REQUEST, "Username already been used");
+      }
+
       const account = await this.auth.addAccount({
         email: register.email,
+        username: register.username,
         password: await Hash(register.password),
-        created_at: new Date(),
       });
       responseSuccess(res, {
         status: StatusCodes.CREATED,
         message: "Success register",
-        data: account.id,
+        data: account,
       });
     } catch (error) {
       next(error);

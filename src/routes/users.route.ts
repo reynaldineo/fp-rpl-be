@@ -16,7 +16,6 @@ export class UserRoute implements Routes {
 
   private initializeRoutes() {
     // Define your routes heres
-    this.router.get(`${this.path}/getrole`, AuthMiddleware, this.user.GetRole);
     this.router.get(`${this.path}/details`, AuthMiddleware, this.user.GetDetail);
     this.router.put(
       `${this.path}/update`,

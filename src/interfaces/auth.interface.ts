@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 export interface RegisterAccount {
   email: string;
+  username: string;
   password: string;
-  created_at: Date;
 }
 
 export interface LoginAccount {
