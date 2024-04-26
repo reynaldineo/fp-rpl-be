@@ -2,7 +2,7 @@ import { Service } from "typedi";
 import db from "../config/database.js";
 import { HttpException } from "../exceptions/HttpException.js";
 import { prodAtt, qtyAtt } from "../interfaces/store.interface.js";
-import { resCartInfo, resQtyInfo } from "../types/index.js";
+import { resCartInfo, resQtyInfo } from "../types/store.type.js";
 import { StatusCodes } from "http-status-codes";
 
 @Service()
@@ -83,9 +83,9 @@ export class StoreService {
   };
 
   public updateProd = async (attribute: prodAtt, id: string, account_id: string) => {
-    const isOwned = isOwn(id, account_id);
+    const isOwned = await isOwn(id, account_id);
     if (!isOwned) {
-      throw new HttpException(StatusCodes.FORBIDDEN, "You are not the owner of this product");
+      throw new HttpException(StatusCodes.BAD_REQUEST, "You are not the owner of this product");
     }
     return await db.product.update({
       data: {
@@ -109,9 +109,9 @@ export class StoreService {
   };
 
   public deleteProd = async (id: string, account_id: string) => {
-    const isOwned = isOwn(id, account_id);
+    const isOwned = await isOwn(id, account_id);
     if (!isOwned) {
-      throw new HttpException(StatusCodes.FORBIDDEN, "You are not the owner of this product");
+      throw new HttpException(StatusCodes.BAD_REQUEST, "You are not the owner of this product");
     }
     return await db.product.delete({
       where: {
@@ -126,7 +126,10 @@ export class StoreService {
   };
 
   public getCartDetail = async (acc_id: string) => {
-    const { id: cart_id }: { id: string } = await getCurCart(acc_id);
+    const cart = await getCurCart(acc_id);
+    if (!cart) {
+      throw new HttpException(StatusCodes.NOT_FOUND, "Cart id is not found");
+    }
     return await db.qty.findMany({
       select: {
         id: true,
@@ -140,7 +143,7 @@ export class StoreService {
         quantity: true,
       },
       where: {
-        cart_id,
+        cart_id: cart.id,
       },
     });
   };
@@ -174,10 +177,12 @@ export class StoreService {
 export const isOwn = (id: string, account_id: string) => {
   return db.product.findFirst({
     where: {
-      AND: {
-        id,
-        account_id,
-      },
+      AND: [
+        {
+          id,
+          account_id,
+        },
+      ],
     },
   });
 };

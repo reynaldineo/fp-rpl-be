@@ -17,10 +17,7 @@ export class StoreController {
 
       const data = await this.store.getProds(Number(size), Number(page), search as string);
       if (data.query.length === 0) {
-        responseSuccess(res, {
-          status: StatusCodes.NO_CONTENT,
-          message: "There is no product in the store",
-        });
+        throw new HttpException(StatusCodes.BAD_REQUEST, "There is no product");
       }
       responseSuccess(res, {
         status: StatusCodes.OK,
@@ -120,19 +117,16 @@ export class StoreController {
 
   public getCart = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      console.log(req.userId);
       const data = await this.store.getCartDetail(req.userId);
       if (data.length === 0) {
+        throw new HttpException(StatusCodes.BAD_REQUEST, "Cart is empty");
+      } else {
         responseSuccess(res, {
-          status: StatusCodes.NO_CONTENT,
-          message: "Cart is empty",
+          status: StatusCodes.OK,
+          message: "Cart is retrieved successfully",
+          data,
         });
       }
-      responseSuccess(res, {
-        status: StatusCodes.OK,
-        message: "Cart is retrieved successfully",
-        data,
-      });
     } catch (error) {
       next(error);
     }

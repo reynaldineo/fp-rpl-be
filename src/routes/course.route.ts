@@ -17,10 +17,6 @@ export class CourseRoute implements Routes {
 
   private initializeRoutes() {
     this.router.get(`${this.path}`, this.user.getCourse);
-    this.router.get(`${this.path}/:username`, AuthMiddleware, this.user.getByUsername);
-    this.router.get(`${this.path}/:id/detail`, AuthMiddleware, this.user.getByID);
-    this.router.get(`${this.path}/:id/getLikes`, AuthMiddleware, this.user.getUserLikesCourse);
-    this.router.get(`${this.path}/:id/product`, AuthMiddleware, this.user.getCourseProd);
     this.router.post(
       `${this.path}/create`,
       AuthMiddleware,
@@ -31,7 +27,10 @@ export class CourseRoute implements Routes {
       ValidationMiddleware(courseInputDTO, true, true),
       this.user.addCourse,
     );
-    this.router.post(`${this.path}/create`, AuthMiddleware, this.user.addCourse);
+    this.router.get(`${this.path}/:username`, AuthMiddleware, this.user.getByUsername);
+    this.router.get(`${this.path}/:id/detail`, AuthMiddleware, this.user.getByID);
+    this.router.get(`${this.path}/:id/getLikes`, AuthMiddleware, this.user.getUserLikesCourse);
+    this.router.get(`${this.path}/:id/product`, AuthMiddleware, this.user.getCourseProd);
     this.router.post(`${this.path}/:id/tapLike`, AuthMiddleware, this.user.tapLike); // like or unlike
     this.router.post(`${this.path}/:id/addComment`, AuthMiddleware, this.user.addComment);
     this.router.put(
