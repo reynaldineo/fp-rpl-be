@@ -173,7 +173,6 @@ export class StoreService {
     }
   };
 
-  // remove cart move it to invoice detail if there is no exist invoice then fill it first
   public createInvoice = async (attribute: invoiceAtt, account_id: string) => {
     const isExist = await isAddressExist(attribute.address, account_id);
     if (isExist) {

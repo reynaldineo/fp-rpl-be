@@ -233,17 +233,4 @@ export class StoreController {
       next(error);
     }
   };
-
-  // public tapPurchase = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  //   try {
-  //     const data = await this.store.tapPurchase(req.body);
-  //     responseSuccess(res, {
-  //       status: StatusCodes.CREATED,
-  //       message: "Payment is completed successfully",
-  //       data,
-  //     });
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // };
 }
