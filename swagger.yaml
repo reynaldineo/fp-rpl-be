@@ -835,6 +835,163 @@ paths:
           description: Unauthorized
         500:
           description: 'Server Error'
+  
+  # [GET] /store/invoice
+  /store/invoice:
+    get:
+      tags:
+      - store
+      summary: Get the invoice
+      responses:
+        200:
+          description: 'OK'
+          examples:
+            application/json:
+              success: true
+              message: "Invoice is retrieved successfully"
+              data:
+                id: "invoice-id"
+                shippingAddress: "invoice-shippingAddress"
+                payment_method: "invoice-payment_method"
+        400:
+          description: 'Bad Request'
+        401:
+          description: Unauthorized
+        500:
+          description: 'Server Error'
+
+  # [GET] /store/invoice/:id
+  /store/invoice/{id}:
+    get:
+      tags:
+      - store
+      summary: Get an invoice by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The ID of the invoice
+      responses:
+        200:
+          description: 'OK'
+          examples:
+            application/json:
+              success: true
+              message: "Invoice is retrieved successfully"
+              data:
+                id: "invoice-id"
+                shippingAddress: "invoice-shippingAddress"
+                payment_method: "invoice-payment_method"
+        400:
+          description: 'Bad Request'
+        401:
+          description: Unauthorized
+        500:
+          description: 'Server Error'
+
+  # [POST] /store/invoice/create
+  /store/invoice/create:
+    post:
+      tags:
+      - store
+      summary: Create an invoice
+      parameters:
+        - in: body
+          name: body
+          required: true
+          description: Invoice Object
+          schema:
+            $ref: '#/definitions/Invoice'
+      responses:
+        201:
+          description: 'Created'
+          examples:
+            application/json:
+              success: true
+              message: "Invoice is created successfully"
+              data:
+                id: "invoice-id"
+                shippingAddress: "invoice-shippingAddress"
+                payment_method: "invoice-payment_method"
+        401:
+          description: Unauthorized
+        409:
+          description: 'Conflict'
+        500:
+          description: 'Server Error'
+      
+  # [PUT] /store/invoice/:id/update
+  /store/invoice/{id}/update:
+    put:
+      tags:
+      - store
+      summary: Update an invoice
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The ID of the invoice
+        - in: body
+          name: body
+          required: true
+          description: Invoice Object
+          schema:
+            $ref: '#/definitions/Invoice'
+      responses:
+        201:
+          description: 'Created'
+          examples:
+            application/json:
+              success: true
+              message: "Invoice is updated successfully"
+              data:
+                id: "invoice-id"
+                shippingAddress: "invoice-shippingAddress"
+                payment_method: "invoice-payment_method"
+        400:
+          description: 'Bad Request'
+        401:
+          description: Unauthorized
+        409:
+          description: 'Conflict'
+        500:
+          description: 'Server Error'
+
+  # [DELETE] /store/invoice/:id/delete
+  /store/invoice/{id}/delete:
+    delete:
+      tags:
+      - store
+      summary: Delete an invoice
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The ID of the invoice
+      responses:
+        201:
+          description: 'Created'
+          examples:
+            application/json:
+              success: true
+              message: "Invoice is deleted successfully"
+              data:
+                id: "invoice-id"
+                shippingAddress: "invoice-shippingAddress"
+                payment_method: "invoice-payment_method"
+                account_id: "account-id which deleted invoice"
+        400:
+          description: 'Bad Request'
+        401:
+          description: Unauthorized
+        500:
+          description: 'Server Error'
 
 # definitions
 definitions:
@@ -922,6 +1079,16 @@ definitions:
       description:
         type: string
         description: Product description
+  Invoice:
+    type: object
+    properties:
+      address:
+        type: string
+        description: shippingAddress
+      payment:
+        type: string
+        description: payment_method
+
 schemes:
  - https
  - http

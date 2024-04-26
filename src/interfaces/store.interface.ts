@@ -11,3 +11,8 @@ export interface prodAtt {
   stock: number;
   description: string;
 }
+
+export interface invoiceAtt {
+  address: string;
+  payment: string;
+}

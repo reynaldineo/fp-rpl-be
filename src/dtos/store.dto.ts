@@ -22,3 +22,13 @@ export class updateProdDTO {
   @IsString({ message: "Description must be a string" })
   public description: string;
 }
+
+export class invoiceDTO {
+  @IsString()
+  @MaxLength(100, { message: "Address must be less than 100 characters" })
+  public address: string;
+
+  @IsString()
+  @MaxLength(20, { message: "Payment method must be less than 20 characters" })
+  public payment: string;
+}
