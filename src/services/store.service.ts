@@ -126,7 +126,6 @@ export class StoreService {
   };
 
   public getCartDetail = async (acc_id: string) => {
-    console.log("get cart");
     const cart = await getCurCart(acc_id);
     if (!cart) {
       throw new HttpException(StatusCodes.NOT_FOUND, "Cart id is not found");
