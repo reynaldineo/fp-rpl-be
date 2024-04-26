@@ -12,13 +12,11 @@ export class UserService {
    */
   public async UpdateProperties(id: string, props: UpdateUser) {
     return await db.account.update({
-      select: { id: true, email: true, username: true, role: true, bio: true },
+      select: { id: true, email: true, username: true, bio: true },
       where: { id: id },
       data: {
         email: props.email,
         username: props.username,
-        password: props.password,
-        role: props.role,
         bio: props.bio,
       },
     });
@@ -27,23 +25,11 @@ export class UserService {
   /**
    * Get the details of a user by account Id
    * @param {string} id - The id of the user
-   * @returns {Promise<account>} A promise that resolves to the user roles
+   * @returns {Promise<account>} A promise that resolves to the account
    */
   public async GetDetails(id: string) {
     return await db.account.findUnique({
-      select: { id: true, email: true, username: true, role: true, created_at: true, bio: true },
-      where: { id: id },
-    });
-  }
-
-  /**
-   * Get the roles of a user by accountId
-   * @param {string} id - The id of the user
-   * @returns {Promise<Role>} A promise that resolves to the user roles
-   */
-  public async GetRoles(id: string) {
-    return await db.account.findUnique({
-      select: { role: true },
+      select: { id: true, email: true, username: true, created_at: true, bio: true },
       where: { id: id },
     });
   }
@@ -57,6 +43,14 @@ export class UserService {
     const userId = await db.account.findFirst({
       select: { id: true },
       where: { email: email },
+    });
+    return userId !== null ? true : false;
+  }
+
+  public async CheckUserByUsername(username: string) {
+    const userId = await db.account.findFirst({
+      select: { id: true },
+      where: { username: username },
     });
     return userId !== null ? true : false;
   }

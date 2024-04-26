@@ -34,27 +34,6 @@ export class UserController {
   };
 
   /**
-   * @description Get the roles of currently logged in account
-   * @endpoint [Get] /user/getrole
-   * @return {Id, Role} - Id and Role from the logged in account
-   */
-  public GetRole = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const role = await this.user.GetRoles(req.userId);
-      responseSuccess(res, {
-        status: StatusCodes.OK,
-        message: "Success get role",
-        data: {
-          id: req.userId,
-          role: role.role,
-        },
-      });
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  /**
    * @description Update the specified account properties. Otherwise don't include it in the request body
    * @endpoint [Put] /user/update
    * @Body {UpdateUserDTO} - Request body
@@ -62,6 +41,14 @@ export class UserController {
   public UpdateUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const props: UpdateUserDTO = req.body;
+      if (await this.user.CheckUserByEmail(props.email)) {
+        throw new HttpException(StatusCodes.BAD_REQUEST, "Email already been used");
+      }
+
+      if (await this.user.CheckUserByUsername(props.username)) {
+        throw new HttpException(StatusCodes.BAD_REQUEST, "Username already been used");
+      }
+
       const updatedData = await this.user.UpdateProperties(req.userId, props);
 
       responseSuccess(res, {

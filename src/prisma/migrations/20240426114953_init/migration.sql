@@ -1,7 +1,4 @@
 -- CreateEnum
-CREATE TYPE "Role" AS ENUM ('Produsen', 'Konsumen');
-
--- CreateEnum
 CREATE TYPE "Label" AS ENUM ('Anorganik', 'Organik');
 
 -- CreateTable
@@ -10,7 +7,6 @@ CREATE TABLE "account" (
     "email" VARCHAR(100) NOT NULL,
     "username" VARCHAR(50),
     "password" CHAR(97) NOT NULL,
-    "role" "Role",
     "created_at" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "bio" TEXT,
 

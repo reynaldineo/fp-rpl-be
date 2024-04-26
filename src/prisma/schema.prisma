@@ -12,8 +12,7 @@ model account {
   id          String    @id @default(uuid()) @db.Uuid 
   email       String    @db.VarChar(100) @unique
   username    String?   @db.VarChar(50) @unique
-  password    String    @db.Char(97)
-  role        Role?      
+  password    String    @db.Char(97)      
   created_at  DateTime  @db.Timestamptz(3) @default(now())
   bio         String?   @db.Text
   invoice     invoice[]
@@ -22,11 +21,6 @@ model account {
   comment     comment[]
   cart        cart[]
   product     product[]
-}
-
-enum Role {
-  Produsen
-  Konsumen  
 }
 
 model course {

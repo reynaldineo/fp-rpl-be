@@ -6,6 +6,10 @@ export class RegisterDTO {
   public email: string;
 
   @IsString()
+  @MaxLength(50)
+  public username: string;
+
+  @IsString()
   @IsNotEmpty()
   @MaxLength(255)
   public password: string;
@@ -21,11 +25,3 @@ export class LoginDTO {
   @MaxLength(255)
   public password: string;
 }
-
-/*
-model account 
-  id          String    @id @default(uuid())  
-  email       String    @unique @db.VarChar(100)
-  password    String    @db.VarChar(255)
-  role        Role   
-*/
