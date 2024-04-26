@@ -1,7 +1,7 @@
 import { Service } from "typedi";
 import db from "../config/database.js";
 import { HttpException } from "../exceptions/HttpException.js";
-import { prodAtt, qtyAtt } from "../interfaces/store.interface.js";
+import { invoiceAtt, prodAtt, qtyAtt } from "../interfaces/store.interface.js";
 import { resCartInfo, resQtyInfo } from "../types/store.type.js";
 import { StatusCodes } from "http-status-codes";
 
@@ -83,9 +83,9 @@ export class StoreService {
   };
 
   public updateProd = async (attribute: prodAtt, id: string, account_id: string) => {
-    const isOwned = await isOwn(id, account_id);
+    const isOwned = await isOwn(id, account_id, 0);
     if (!isOwned) {
-      throw new HttpException(StatusCodes.BAD_REQUEST, "You are not the owner of this product");
+      throw new HttpException(StatusCodes.BAD_REQUEST, "You dont have permission to update this product");
     }
     return await db.product.update({
       data: {
@@ -109,9 +109,9 @@ export class StoreService {
   };
 
   public deleteProd = async (id: string, account_id: string) => {
-    const isOwned = await isOwn(id, account_id);
+    const isOwned = await isOwn(id, account_id, 0);
     if (!isOwned) {
-      throw new HttpException(StatusCodes.BAD_REQUEST, "You are not the owner of this product");
+      throw new HttpException(StatusCodes.BAD_REQUEST, "You don't have permission to delete this product");
     }
     return await db.product.delete({
       where: {
@@ -126,7 +126,6 @@ export class StoreService {
   };
 
   public getCartDetail = async (acc_id: string) => {
-    console.log("get cart");
     const cart = await getCurCart(acc_id);
     if (!cart) {
       throw new HttpException(StatusCodes.NOT_FOUND, "Cart id is not found");
@@ -173,19 +172,122 @@ export class StoreService {
       return await updateCart(qID, new_qty, cID, curCost, qty, prodPrice);
     }
   };
+
+  // remove cart move it to invoice detail if there is no exist invoice then fill it first
+  public createInvoice = async (attribute: invoiceAtt, account_id: string) => {
+    const isExist = await isAddressExist(attribute.address, account_id);
+    if (isExist) {
+      throw new HttpException(StatusCodes.CONFLICT, "Address already exist");
+    }
+    return await db.invoice.create({
+      data: {
+        shippingAddress: attribute.address,
+        payment_method: attribute.payment,
+        account_id,
+      },
+      select: {
+        id: true,
+        shippingAddress: true,
+        payment_method: true,
+      },
+    });
+  };
+
+  public getInvoices = async (account_id: string) => {
+    return await db.invoice.findMany({
+      where: {
+        account_id,
+      },
+      select: {
+        id: true,
+        shippingAddress: true,
+        payment_method: true,
+      },
+    });
+  };
+
+  public getInvoiceByID = async (id: string, account_id: string) => {
+    const isOwned = await isOwn(id, account_id, 1);
+    if (!isOwned) {
+      throw new HttpException(StatusCodes.BAD_REQUEST, "You dont have permission to access this invoice");
+    }
+    return await db.invoice.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+        shippingAddress: true,
+        payment_method: true,
+      },
+    });
+  };
+
+  public editInvoice = async (attribute: invoiceAtt, id: string, account_id: string) => {
+    const isOwned = await isOwn(id, account_id, 1);
+    if (!isOwned) {
+      throw new HttpException(StatusCodes.BAD_REQUEST, "You dont have permission to edit this invoice");
+    }
+
+    const isExist = await isAddressExist(attribute.address, account_id);
+    if (isExist) {
+      throw new HttpException(StatusCodes.CONFLICT, "Address already exist");
+    }
+    return await db.invoice.update({
+      where: {
+        id,
+      },
+      data: {
+        shippingAddress: attribute.address,
+        payment_method: attribute.payment,
+      },
+      select: {
+        id: true,
+        shippingAddress: true,
+        payment_method: true,
+      },
+    });
+  };
+
+  public deleteInvoice = async (id: string, account_id: string) => {
+    const isOwned = await isOwn(id, account_id, 1);
+    if (!isOwned) {
+      throw new HttpException(StatusCodes.BAD_REQUEST, "You dont have permission to delete this invoice");
+    }
+    return await db.invoice.delete({
+      where: {
+        id,
+      },
+    });
+  };
 }
 
-export const isOwn = (id: string, account_id: string) => {
-  return db.product.findFirst({
-    where: {
-      AND: [
-        {
-          id,
-          account_id,
-        },
-      ],
-    },
-  });
+export const isOwn = (id: string, account_id: string, op: number) => {
+  if (op == 0) {
+    // check product
+    return db.product.findFirst({
+      where: {
+        AND: [
+          {
+            id,
+            account_id,
+          },
+        ],
+      },
+    });
+  } else if (op == 1) {
+    // check invoice
+    return db.invoice.findFirst({
+      where: {
+        AND: [
+          {
+            id,
+            account_id,
+          },
+        ],
+      },
+    });
+  }
 };
 
 export const getCurCart = (account_id: string) => {
@@ -274,4 +376,15 @@ export const updateCart = (
       select: resCartInfo,
     }),
   ]);
+};
+
+export const isAddressExist = (shippingAddress: string, account_id: string) => {
+  return db.invoice.findFirst({
+    where: {
+      AND: {
+        shippingAddress,
+        account_id,
+      },
+    },
+  });
 };

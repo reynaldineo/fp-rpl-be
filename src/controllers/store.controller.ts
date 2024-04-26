@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import { StoreService } from "../services/store.service.js";
 import { responseSuccess } from "../utils/response.js";
 import { StatusCodes } from "http-status-codes";
-import { updateCartDTO, updateProdDTO } from "../dtos/store.dto.js";
+import { invoiceDTO, updateCartDTO, updateProdDTO } from "../dtos/store.dto.js";
 import { HttpException } from "../exceptions/HttpException.js";
 import { v2 as cloudinary } from "cloudinary";
 import { randomUUID } from "crypto";
@@ -160,4 +160,90 @@ export class StoreController {
       next(error);
     }
   };
+
+  public createInvoice = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { address, payment }: invoiceDTO = req.body;
+      const data = await this.store.createInvoice({ address, payment }, req.userId);
+      responseSuccess(res, {
+        status: StatusCodes.CREATED,
+        message: "Invoice is created successfully",
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getInvoices = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const data = await this.store.getInvoices(req.userId);
+      if (data.length === 0) {
+        throw new HttpException(StatusCodes.BAD_REQUEST, "Invoice is empty");
+      }
+      responseSuccess(res, {
+        status: StatusCodes.OK,
+        message: "Invoice is retrieved successfully",
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getInvoiceByID = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const data = await this.store.getInvoiceByID(req.params.id, req.userId);
+      if (!data) {
+        throw new HttpException(StatusCodes.BAD_REQUEST, "There is no invoice with id: " + req.params.id);
+      }
+      responseSuccess(res, {
+        status: StatusCodes.OK,
+        message: "Invoice is retrieved successfully",
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public editInvoice = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { address, payment }: invoiceDTO = req.body;
+      const data = await this.store.editInvoice({ address, payment }, req.params.id, req.userId);
+      responseSuccess(res, {
+        status: StatusCodes.CREATED,
+        message: "Invoice is updated successfully",
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public delInvoice = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const data = await this.store.deleteInvoice(req.params.id, req.userId);
+      responseSuccess(res, {
+        status: StatusCodes.CREATED,
+        message: "Invoice is deleted successfully",
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  // public tapPurchase = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  //   try {
+  //     const data = await this.store.tapPurchase(req.body);
+  //     responseSuccess(res, {
+  //       status: StatusCodes.CREATED,
+  //       message: "Payment is completed successfully",
+  //       data,
+  //     });
+  //   } catch (error) {
+  //     next(error);
+  //   }
+  // };
 }
