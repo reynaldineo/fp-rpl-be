@@ -127,9 +127,6 @@ export class StoreService {
 
   public getCartDetail = async (acc_id: string) => {
     const cart = await getCurCart(acc_id);
-    if (!cart) {
-      throw new HttpException(StatusCodes.NOT_FOUND, "Cart id is not found");
-    }
     return await db.qty.findMany({
       select: {
         id: true,
@@ -173,7 +170,6 @@ export class StoreService {
     }
   };
 
-  // remove cart move it to invoice detail if there is no exist invoice then fill it first
   public createInvoice = async (attribute: invoiceAtt, account_id: string) => {
     const isExist = await isAddressExist(attribute.address, account_id);
     if (isExist) {
@@ -197,23 +193,6 @@ export class StoreService {
     return await db.invoice.findMany({
       where: {
         account_id,
-      },
-      select: {
-        id: true,
-        shippingAddress: true,
-        payment_method: true,
-      },
-    });
-  };
-
-  public getInvoiceByID = async (id: string, account_id: string) => {
-    const isOwned = await isOwn(id, account_id, 1);
-    if (!isOwned) {
-      throw new HttpException(StatusCodes.BAD_REQUEST, "You dont have permission to access this invoice");
-    }
-    return await db.invoice.findUnique({
-      where: {
-        id,
       },
       select: {
         id: true,
@@ -257,6 +236,79 @@ export class StoreService {
     return await db.invoice.delete({
       where: {
         id,
+      },
+    });
+  };
+
+  public purchaseFromCart = async (account_id: string) => {
+    const curCart = await getCurCart(account_id);
+    const curInvoice = await getCurInvoice(account_id);
+    return await db.$transaction([
+      db.invoice_detail.create({
+        data: {
+          total_cost: curCart.current_cost,
+          cart_id: curCart.id,
+          invoice_id: curInvoice.id,
+        },
+        select: {
+          id: true,
+        },
+      }),
+      db.cart.update({
+        data: {
+          account_id: null,
+        },
+        where: {
+          id: curCart.id as string,
+        },
+        select: {
+          id: true,
+        },
+      }),
+      db.cart.create({
+        data: {
+          account_id,
+        },
+        select: {
+          id: true,
+        },
+      }),
+    ]);
+  };
+
+  public getInvoiceByID = async (id: string, account_id: string) => {
+    const isOwned = await isOwn(id, account_id, 1);
+    if (!isOwned) {
+      throw new HttpException(StatusCodes.BAD_REQUEST, "You dont have permission to view this invoice");
+    }
+    return await db.invoice.findMany({
+      where: {
+        id,
+      },
+      select: {
+        shippingAddress: true,
+        payment_method: true,
+        invoice_detail: {
+          include: {
+            cart: {
+              select: {
+                qty: {
+                  select: {
+                    quantity: true,
+                    product: {
+                      select: {
+                        id: true,
+                        img_url: true,
+                        name: true,
+                        price: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     });
   };
@@ -385,6 +437,17 @@ export const isAddressExist = (shippingAddress: string, account_id: string) => {
         shippingAddress,
         account_id,
       },
+    },
+  });
+};
+
+export const getCurInvoice = (account_id: string) => {
+  return db.invoice.findFirst({
+    where: {
+      account_id,
+    },
+    select: {
+      id: true,
     },
   });
 };

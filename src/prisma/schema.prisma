@@ -77,10 +77,10 @@ model product {
 }
 
 model cart {
-  id              String  @id @default(uuid()) @db.Uuid 
-  current_cost    Int     @default(0)
-  account         account @relation(fields: [account_id], references: [id], onDelete: Cascade)
-  account_id      String  @db.Uuid @unique
+  id              String   @id @default(uuid()) @db.Uuid 
+  current_cost    Int      @default(0)
+  account         account? @relation(fields: [account_id], references: [id], onDelete: Cascade)
+  account_id      String?  @db.Uuid @unique
   qty             qty[]
   invoice_detail  invoice_detail[]
 }

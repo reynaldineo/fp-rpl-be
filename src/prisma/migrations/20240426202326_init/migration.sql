@@ -65,7 +65,7 @@ CREATE TABLE "product" (
 CREATE TABLE "cart" (
     "id" UUID NOT NULL,
     "current_cost" INTEGER NOT NULL DEFAULT 0,
-    "account_id" UUID NOT NULL,
+    "account_id" UUID,
 
     CONSTRAINT "cart_pkey" PRIMARY KEY ("id")
 );

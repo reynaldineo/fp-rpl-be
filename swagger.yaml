@@ -755,6 +755,32 @@ paths:
           description: 'Not Found'
         500:
           description: 'Server Error'
+  
+
+  # [POST] /store/cart/purchase
+  /store/cart/purchase:
+    post:
+      tags:
+      - store
+      summary: Purchase the cart
+      responses:
+        201:
+          description: 'Created'
+          examples:
+            application/json:
+              success: true
+              message: "Cart is purchased successfully"
+              data:
+                id-1: "new invoice detail-id"
+                id-2: "old cart-id"
+                id-3: "new cart-id"
+        400:
+          description: 'Bad Request'
+        401:
+          description: Unauthorized
+        500:
+          description: 'Server Error'
+
 
   # [PUT] /store/cart/:productID/update
   /store/cart/{productID}/update:
@@ -881,9 +907,22 @@ paths:
               success: true
               message: "Invoice is retrieved successfully"
               data:
-                id: "invoice-id"
                 shippingAddress: "invoice-shippingAddress"
                 payment_method: "invoice-payment_method"
+                invoice_detail:
+                  id: "invoice-detail-id"
+                  total_cost: 3000
+                  date: "date of invoice"
+                  invoice_id: "invoice-id"
+                  cart-id: "cart-id"
+                  cart:
+                    qty:
+                      quantity: 1
+                      product:
+                        id: "product-id"
+                        img_url: "product-img-url"
+                        name: "product-name"
+                        price: 3000
         400:
           description: 'Bad Request'
         401:

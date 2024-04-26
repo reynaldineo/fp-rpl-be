@@ -234,16 +234,16 @@ export class StoreController {
     }
   };
 
-  // public tapPurchase = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  //   try {
-  //     const data = await this.store.tapPurchase(req.body);
-  //     responseSuccess(res, {
-  //       status: StatusCodes.CREATED,
-  //       message: "Payment is completed successfully",
-  //       data,
-  //     });
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // };
+  public purchaseFromCart = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const data = await this.store.purchaseFromCart(req.userId);
+      responseSuccess(res, {
+        status: StatusCodes.CREATED,
+        message: "Cart is purchased successfully",
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }

@@ -17,9 +17,6 @@ export class StoreRoute implements Routes {
 
   private initializeRoutes() {
     this.router.get(`${this.path}`, this.user.getProds);
-    this.router.get(`${this.path}/cart`, AuthMiddleware, this.user.getCart);
-    this.router.get(`${this.path}/invoice`, AuthMiddleware, this.user.getInvoices);
-    this.router.get(`${this.path}/invoice/:id`, AuthMiddleware, this.user.getInvoiceByID);
     this.router.get(`${this.path}/:id`, AuthMiddleware, this.user.getByID);
     this.router.post(
       `${this.path}/create`,
@@ -33,6 +30,7 @@ export class StoreRoute implements Routes {
       ValidationMiddleware(updateProdDTO, true, true),
       this.user.updateProd,
     );
+    this.router.get(`${this.path}/cart`, AuthMiddleware, this.user.getCart);
     this.router.delete(`${this.path}/delete/:id`, AuthMiddleware, this.user.delProd);
     this.router.put(
       `${this.path}/cart/:id/update`,
@@ -40,7 +38,10 @@ export class StoreRoute implements Routes {
       ValidationMiddleware(updateCartDTO, true, true),
       this.user.updateCart,
     );
+    this.router.post(`${this.path}/cart/purchase`, AuthMiddleware, this.user.purchaseFromCart);
     this.router.delete(`${this.path}/cart/:id/delete`, AuthMiddleware, this.user.delQtyProd);
+    this.router.get(`${this.path}/invoice`, AuthMiddleware, this.user.getInvoices);
+    this.router.get(`${this.path}/invoice/:id`, AuthMiddleware, this.user.getInvoiceByID);
     this.router.post(
       `${this.path}/invoice/create`,
       AuthMiddleware,
