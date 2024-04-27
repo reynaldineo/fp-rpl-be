@@ -233,4 +233,17 @@ export class StoreController {
       next(error);
     }
   };
+
+  public purchaseFromCart = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const data = await this.store.purchaseFromCart(req.userId);
+      responseSuccess(res, {
+        status: StatusCodes.CREATED,
+        message: "Cart is purchased successfully",
+        data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
